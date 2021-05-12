@@ -1,23 +1,58 @@
-import { Form, Select, InputNumber, Switch, Slider, Button } from 'antd'
-
-// Custom DatePicker that uses Day.js instead of Moment.js
-import DatePicker from '../components/DatePicker'
-
-import { SmileFilled } from '@ant-design/icons'
+import { useState, useEffect } from 'react';
+import { Form, Select, Input, Button, message } from 'antd';
 
 import Link from 'next/link'
 
-const FormItem = Form.Item
-const Option = Select.Option
+const FormItem = Form.Item;
+const Option = Select.Option;
 
 const content = {
-  marginTop: '100px',
+  marginTop: 50,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'center'
 }
 
 export default function Home() {
+
+  const [firstname, setFirstName] = useState('');
+  const [lastname, setLastName] = useState('');
+  const [company, setCompany] = useState('');
+  const [list, setList] = useState('');
+  const [loading, setLoading] = useState(false)
+
+  const onSelect = value => setList(value);
+
+  const onSaveClick = async () => {
+
+    setLoading(true);
+
+    let user = JSON.stringify({
+      firstname: firstname,
+      lastname: lastname,
+      company: company,
+      list: list
+    });
+
+    let request = await fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/Json' },
+      body: user
+    });
+    let response = await request.json();
+    response.success
+      ? message.success(response.message)
+      : message.error(response.message)
+
+    setLoading(false)
+  }
+
   return (
+
     <div style={content}>
-      <div className="text-center mb-5">
+      <h1>Enregistre un nouveau contact :</h1>
+      {/* <div className="text-center mb-5">
         <Link href="#">
           <a className="logo mr-0">
             <SmileFilled size={48} strokeWidth={1} />
@@ -25,76 +60,68 @@ export default function Home() {
         </Link>
 
         <p className="mb-0 mt-3 text-disabled">Welcome to the world !</p>
-      </div>
+      </div> */}
       <div>
-        <Form layout="horizontal">
+        <Form layout="vertical">
+
           <FormItem
-            label="Input Number"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 8 }}
+            label="Prénom"
           >
-            <InputNumber
+            <Input
               size="large"
-              min={1}
-              max={10}
-              style={{ width: 100 }}
-              defaultValue={3}
-              name="inputNumber"
+              placeholder="John"
+              onChange={e => setFirstName(e.target.value)}
+              value={firstname}
             />
           </FormItem>
 
           <FormItem
-            label="Switch"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 8 }}
+            label="Nom"
           >
-            <Switch defaultChecked name="switch" />
+            <Input
+              size="large"
+              placeholder="Doe"
+              onChange={e => setLastName(e.target.value)}
+              value={lastname}
+            />
           </FormItem>
 
           <FormItem
-            label="Slider"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 8 }}
+            label="Société"
           >
-            <Slider defaultValue={70} />
+            <Input
+              size="large"
+              placeholder="Facebook"
+              onChange={e => setCompany(e.target.value)}
+              value={company}
+            />
           </FormItem>
 
           <FormItem
-            label="Select"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 8 }}
+            label="Liste du contact"
           >
             <Select
               size="large"
-              defaultValue="lucy"
+              defaultValue="Sélectionne-en une"
               style={{ width: 192 }}
-              name="select"
+              onChange={onSelect}
             >
-              <Option value="jack">jack</Option>
-              <Option value="lucy">lucy</Option>
-              <Option value="disabled" disabled>
-                disabled
-              </Option>
-              <Option value="yiminghe">yiminghe</Option>
+              <Option value="CEO">CEO</Option>
+              <Option value="CTO">CTO</Option>
             </Select>
           </FormItem>
 
           <FormItem
-            label="DatePicker"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 8 }}
-          >
-            <DatePicker name="startDate" />
-          </FormItem>
-          <FormItem
             style={{ marginTop: 48 }}
-            wrapperCol={{ span: 8, offset: 8 }}
           >
-            <Button size="large" type="primary" htmlType="submit">
-              OK
-            </Button>
-            <Button size="large" style={{ marginLeft: 8 }}>
-              Cancel
+            <Button
+              size="large"
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              onClick={onSaveClick}
+            >
+              Enregistrer
             </Button>
           </FormItem>
         </Form>
