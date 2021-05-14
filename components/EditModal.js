@@ -11,7 +11,7 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
     const [domain, setDomain] = useState('');
     const [email, setEmail] = useState('');
     // const [status, setStatus] = useState(contact.status);
-    const [list, setList] = useState('');
+    // const [list, setList] = useState('');
     const [linkedinUrl, setLinkedinUrl] = useState('');
     // const [contactToEdit, setContactToEdit] = useState({});
 
@@ -21,7 +21,7 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
         setCompany(contact.company);
         setDomain(contact.domain);
         setEmail(contact.email);
-        setList(contact.list);
+        // setList(contact.list);
         setLinkedinUrl(contact.linkedinUrl);
     }, [contact]);
 
@@ -33,7 +33,7 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
             company: company,
             domain: domain,
             email: email,
-            list: list,
+            // list: list,
             key: contact.key,
             status: contact.status,
             linkedinUrl: linkedinUrl
@@ -88,12 +88,12 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
                 onChange={(e) => setLinkedinUrl(e.target.value)}
                 style={{ marginBottom: 10 }}
             />
-            <Input
+            {/* <Input
                 placeholder="Liste"
                 value={list}
                 onChange={(e) => setList(e.target.value)}
                 style={{ marginBottom: 10 }}
-            />
+            /> */}
         </Modal>
     )
 };

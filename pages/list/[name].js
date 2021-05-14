@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Table, Tag, Button, message } from 'antd';
-import { DeleteOutlined, EditOutlined, LinkedinOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, message, Dropdown, Menu } from 'antd';
+import { DeleteOutlined, EditOutlined, LinkedinOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import DbConnect from '../../models/dbConnect';
 import leadsModel from '../../models/leads';
+import CreateModal from '../../components/CreateModal';
 import EditModal from '../../components/EditModal';
 
 const List = ({ list }) => {
@@ -15,6 +16,7 @@ const List = ({ list }) => {
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [isCreateVisible, setIsCreateVisible] = useState(false);
     const [isEditVisible, setIsEditVisible] = useState(false);
     const [contactToEdit, setContactToEdit] = useState({});
 
@@ -22,9 +24,7 @@ const List = ({ list }) => {
         for (let i = 0; i < list.length; i++) {
             list[i].key = i
         };
-        // const header = Object.keys(list[0]);
         const header = ["firstname", "lastname", "company", "domain", "email", "status", "linkedinUrl"]
-        // console.log(header);
         let finalHeaders = [];
         for (let title of header) {
             if (title !== '_id' && title !== 'list' && title !== '__v' && title !== 'key') {
@@ -111,10 +111,9 @@ const List = ({ list }) => {
         let datasCopy = [...datas];
         let contactsToDelete = [];
         // console.log(selectedRows);
-        for (let row of selectedRows){
+        for (let row of selectedRows) {
             let userToFind = datasCopy.find(user => user.key === row);
-            if (userToFind){
-                // console.log(userToFind);
+            if (userToFind) {
                 contactsToDelete.push(userToFind._id);
                 datasCopy = datasCopy.filter(user => user.key !== userToFind.key)
             }
@@ -126,7 +125,7 @@ const List = ({ list }) => {
             body: data
         })
         let response = await request.json();
-        if (response.success){
+        if (response.success) {
             setDatas(datasCopy);
             message.success(response.message)
         } else {
@@ -138,7 +137,6 @@ const List = ({ list }) => {
         for (let contact of datas) {
             for (let row of selectedRows) {
                 if (contact.key === row) {
-                    // console.log(contact)
                     setContactToEdit(contact)
                 }
             }
@@ -167,15 +165,21 @@ const List = ({ list }) => {
         } else {
             message.error('Erreur lors de la mise à jour... Veuillez réessayer')
         }
-
     };
 
-    // const openEditModal = () => setIsEditVisible(true);
+    const addContact = contact => {
+        let datasCopy = [...datas];
+        contact.key = datasCopy.length;
+        console.log(contact);
+        datasCopy.push(contact);
+        setDatas(datasCopy)
+    };
+
+    const handleCreateModal = isVisible => setIsCreateVisible(isVisible);
 
     const handleEditModal = isVisible => setIsEditVisible(isVisible);
 
     const onSelectChange = rows => {
-        // console.log(rows);
         setSelectedRows(rows)
     };
 
@@ -184,36 +188,101 @@ const List = ({ list }) => {
         onChange: onSelectChange,
     };
 
+    const handleListChange = async e => {
+        let list = e.key === "1" ? "CEO" : "CTO"
+        if (list === name) {
+            message.error(`Vous êtes actuellement dans la liste ${name}...`)
+        } else {
+            let datasCopy = [...datas];
+            let usersToMove = [];
+            for (let row of selectedRows) {
+                let userToFind = datasCopy.find(user => user.key === row);
+                if (userToFind) {
+                    usersToMove.push({
+                        id: userToFind._id,
+                        list
+                    });
+                    datasCopy = datasCopy.filter(user => user.key !== userToFind.key)
+                }
+            };
+            let data = JSON.stringify(usersToMove);
+            let request = await fetch('/api/list', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/Json' },
+                body: data
+            });
+            let response = await request.json();
+            if (response.success) {
+                message.success(`Contacts tranférés dans la liste ${list} !`);
+                setDatas(datasCopy)
+            } else {
+                message.error(response.error)
+            }
+            setSelectedRows([]);
+        }
+    }
+
+    const menu = (
+        <Menu onClick={handleListChange}>
+            <Menu.Item key="1">
+                CEO
+            </Menu.Item>
+            <Menu.Item key="2">
+                CTO
+            </Menu.Item>
+        </Menu>
+    )
+
     // console.log(datas);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 25 }}>
             <h1 style={{ marginBottom: 25 }}>Liste sélectionnée : {name}</h1>
-            <div style={{ width: '50%', marginBottom: 25, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-                <Button
-                    icon={<EditOutlined />}
-                    disabled={selectedRows.length !== 1 ? true : false}
-                    style={{ marginRight: 5 }}
-                    onClick={onEditClick}
-                >
-                    Modifier le contact
-                </Button>
-                <Button
-                    icon={<DeleteOutlined />}
-                    disabled={selectedRows.length === 0 ? true : false}
-                    style={{ marginRight: 5 }}
-                    danger
-                    onClick={onDeleteClick}
-                >
-                    {
-                        selectedRows.length <= 1
-                            ? 'Supprimer le contact'
-                            : `Supprimer ${selectedRows.length} contacts`
-                    }
-                </Button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <div style={{ width: '100%', marginBottom: 25, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+                    <Button
+                        type="primary"
+                        icon={<UserAddOutlined />}
+                        style={{ marginRight: 5 }}
+                        onClick={() => setIsCreateVisible(true)}
+                    >
+                        Créer un contact
+                    </Button>
+                    <Dropdown.Button
+                        overlay={menu}
+                        disabled={selectedRows.length === 0 ? true : false}
+                        icon={<UnorderedListOutlined />}
+                        placement="topLeft"
+                        style={{ marginRight: 5 }}
+                    >
+                        Déplacer vers
+                    </Dropdown.Button>
+                    <Button
+                        icon={<EditOutlined />}
+                        disabled={selectedRows.length !== 1 ? true : false}
+                        style={{ marginRight: 5 }}
+                        onClick={onEditClick}
+                    >
+                        Modifier le contact
+                    </Button>
+                    <Button
+                        icon={<DeleteOutlined />}
+                        disabled={selectedRows.length === 0 ? true : false}
+                        style={{ marginRight: 5 }}
+                        danger
+                        onClick={onDeleteClick}
+                    >
+                        {
+                            selectedRows.length <= 1
+                                ? 'Supprimer le contact'
+                                : `Supprimer ${selectedRows.length} contacts`
+                        }
+                    </Button>
+                </div>
+                <Table rowSelection={rowSelection} columns={columns} dataSource={datas} />
             </div>
-            <Table rowSelection={rowSelection} columns={columns} dataSource={datas} />
             <EditModal isModalVisible={isEditVisible} showModal={handleEditModal} contact={contactToEdit} confirmUpdating={confirmUpdating} />
+            <CreateModal isModalVisible={isCreateVisible} showModal={handleCreateModal} listName={name} addContact={addContact} />
         </div>
     )
 };

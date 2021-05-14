@@ -33,11 +33,14 @@ export default async function handler(req, res) {
                         firstname: req.body.firstname,
                         lastname: req.body.lastname,
                         company: req.body.company,
+                        domain: req.body.domain,
+                        email: req.body.email,
+                        linkedinUrl: req.body.linkedinUrl,
                         list: req.body.list
                     });
                     let leadSaved = await newLead.save();
                     leadSaved
-                        ? res.status(200).json({ success: true, message: 'contact sauvegardé !' })
+                        ? res.status(200).json({ success: true, message: 'contact sauvegardé !', contact: leadSaved })
                         : res.status(400).json({ success: false, message: 'contact non sauvegardé... Veuillez rééssayez.' })
                 }
             } catch (error) {
