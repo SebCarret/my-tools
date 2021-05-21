@@ -33,9 +33,7 @@ export default function Upload({ credits }) {
 
 export async function getServerSideProps() {
 
-    console.log(process.env.NEXT_PUBLIC_HUNTER_APIKEY);
-
-    let request = await fetch(`https://api.hunter.io/v2/account?api_key=${process.env.NEXT_PUBLIC_HUNTER_APIKEY}`);
+    let request = await fetch(`https://api.hunter.io/v2/account?api_key=${process.env.HUNTER_APIKEY}`);
     let response = await request.json();
 
     return {
