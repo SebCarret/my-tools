@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import DbConnect from '../../models/dbConnect';
 import leadsModel from '../../models/leads';
+import TopMenu from "../../components/TopMenu";
 import CreateModal from '../../components/CreateModal';
 import EditModal from '../../components/EditModal';
 
@@ -105,7 +106,7 @@ const List = ({ list }) => {
         };
         setColumns(finalHeaders);
         setDatas(list)
-    }, []);
+    }, [list]);
 
     const onDeleteClick = async () => {
         let datasCopy = [...datas];
@@ -233,10 +234,9 @@ const List = ({ list }) => {
         </Menu>
     )
 
-    // console.log(datas);
-
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 25 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <TopMenu />
             <h1 style={{ marginBottom: 25 }}>Liste sélectionnée : {name}</h1>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <div style={{ width: '100%', marginBottom: 25, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>

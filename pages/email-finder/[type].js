@@ -1,12 +1,18 @@
 import { Badge, Tooltip } from 'antd';
 import { SearchOutlined, CheckCircleOutlined, CalendarOutlined } from '@ant-design/icons';
-import UploadFile from '../components/UploadFile';
+import { useRouter } from 'next/router';
+import TopMenu from '../../components/TopMenu';
+import SingleSearch from '../../components/EmailSingleSearch';
+import UploadFile from '../../components/UploadFile';
 
 export default function Upload({ credits }) {
 
+    const router = useRouter();
+    const { type } = router.query;
+
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', minHeight: '100vh', margin: 20 }}>
-            <h1 style={{ marginBottom: 20 }}>Upload your CSV file</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', minHeight: '100vh' }}>
+            <TopMenu />
             <div style={{ display: 'flex', width: '50%', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Badge count={credits.searches}>
                     <Tooltip title="Email searches availables">
@@ -25,7 +31,11 @@ export default function Upload({ credits }) {
                     <p style={{ marginBottom: 0, marginLeft: 10 }}>{credits.date}</p>
                 </div>
             </div>
-            <UploadFile />
+            {
+                type === 'single'
+                ? <SingleSearch />
+                : <UploadFile />
+            }
         </div>
 
     )

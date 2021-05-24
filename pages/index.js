@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Form, Select, Input, Button, message } from 'antd';
-
-import Link from 'next/link'
+import TopMenu from '../components/TopMenu';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 const content = {
-  marginTop: 50,
+  // marginTop: 50,
+  width: '100%',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-start',
@@ -51,6 +51,7 @@ export default function Home() {
   return (
 
     <div style={content}>
+      <TopMenu />
       <h1>Enregistre un nouveau contact :</h1>
       {/* <div className="text-center mb-5">
         <Link href="#">
