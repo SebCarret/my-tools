@@ -29,15 +29,16 @@ export default async function handler(req, res) {
                 if (leadToFind) {
                     res.status(200).json({ success: false, message: 'contact déjà présent en base de données...' })
                 } else {
-                    let newLead = new leadsModel({
-                        firstname: req.body.firstname,
-                        lastname: req.body.lastname,
-                        company: req.body.company,
-                        domain: req.body.domain,
-                        email: req.body.email,
-                        linkedinUrl: req.body.linkedinUrl,
-                        list: req.body.list
-                    });
+                    // let newLead = new leadsModel({
+                    //     firstname: req.body.firstname,
+                    //     lastname: req.body.lastname,
+                    //     company: req.body.company,
+                    //     domain: req.body.domain,
+                    //     email: req.body.email,
+                    //     linkedinUrl: req.body.linkedinUrl,
+                    //     list: req.body.list
+                    // });
+                    let newLead = new leadsModel(req.body);
                     let leadSaved = await newLead.save();
                     leadSaved
                         ? res.status(200).json({ success: true, message: 'contact sauvegardé !', contact: leadSaved })
