@@ -39,7 +39,7 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
     return (
         <Modal
-            title="Créer un nouveau contact"
+            title="Create new contact"
             visible={isModalVisible}
             footer={null}
             onCancel={() => {
@@ -51,11 +51,11 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
                 <FormItem
                     name="firstname"
-                    label="Prénom"
+                    label="Firsname"
                     rules={[
                         {
                             required: true,
-                            message: 'Le prénom est obligatoire'
+                            message: 'Firstname is required'
                         }
                     ]}
                 >
@@ -67,11 +67,11 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
                 <FormItem
                     name="lastname"
-                    label="Nom"
+                    label="Lastname"
                     rules={[
                         {
                             required: true,
-                            message: 'Le nom est obligatoire'
+                            message: 'Lastname is required'
                         }
                     ]}
                 >
@@ -83,11 +83,11 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
                 <FormItem
                     name="company"
-                    label="Société"
+                    label="Company"
                     rules={[
                         {
                             required: true,
-                            message: 'Le nom de la société est obligatoire'
+                            message: 'Company name is required'
                         }
                     ]}
                 >
@@ -99,7 +99,7 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
                 <FormItem
                     name="domain"
-                    label="Site web"
+                    label="Website"
                 >
                     <Input
                         size="large"
@@ -119,7 +119,7 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
                 <FormItem
                     name="linkedinUrl"
-                    label="URL LinkedIn"
+                    label="LinkedIn URL"
                 >
                     <Input
                         size="large"
@@ -129,17 +129,17 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
                 <FormItem
                     name="list"
-                    label="Liste du contact"
+                    label="List"
                     rules={[
                         {
                             required: true,
-                            message: "Le choix d'une liste est obligatoire"
+                            message: "Please choose a list"
                         }
                     ]}
                 >
                     <Select
                         size="large"
-                        defaultValue="Sélectionne-en une"
+                        defaultValue="Select a list"
                         style={{ width: 192 }}
                         onChange={onSelect}
                     >
@@ -157,7 +157,7 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
                         htmlType="submit"
                         loading={loading}
                     >
-                        Enregistrer
+                        Save
                     </Button>
                 </FormItem>
             </Form>

@@ -4,31 +4,7 @@ import { SearchOutlined, CloseCircleOutlined, UnorderedListOutlined } from '@ant
 
 const Option = Select.Option;
 
-const fakeDatas = [
-    {
-        firstname: 'Louis',
-        lastname: 'Frupel',
-        email: 'louis@facebook.com',
-        status: 'valid',
-        score: 90
-    },
-    {
-        firstname: 'John',
-        lastname: 'Doe',
-        email: 'john.doe@facebook.com',
-        status: 'unknown',
-        score: 70
-    },
-    {
-        firstname: 'Kiki',
-        lastname: 'Kissonlésnorki',
-        email: 'kiki@facebook.com',
-        status: 'unverified',
-        score: 50
-    }
-];
-
-export default function SingleEmailSearch({credits, minusCredits}) {
+export default function SingleEmailSearch({ credits, minusCredits }) {
 
     const [type, setType] = useState('');
     const [loading, setLoading] = useState(false);
@@ -46,25 +22,21 @@ export default function SingleEmailSearch({credits, minusCredits}) {
         setLoading(true);
         let datas = {
             firstname: values.firstname,
-            lastname: values.lastname,
-            // email: "john.doe@facebook.com",
-            // status: "valid",
-            // score: 95
+            lastname: values.lastname
         };
         datas[values.type] = values.value;
         let request = await fetch('/api/email-finder', {
             method: 'POST',
-            headers: {'Content-Type': 'application/Json'},
+            headers: { 'Content-Type': 'application/Json' },
             body: JSON.stringify(datas)
         })
         let response = await request.json();
-        console.log(response);
-        if (response.success){
+        if (response.success) {
             datas.email = response.userInfos.email;
             datas.status = response.userInfos.status;
             datas.score = response.userInfos.score;
             datas.linkedinUrl = response.userInfos.linkedinUrl;
-            minusCredits()
+            minusCredits(credits - 1)
         } else {
             message.error("Something's wrong with the API call... PLease try again")
         }
@@ -79,11 +51,11 @@ export default function SingleEmailSearch({credits, minusCredits}) {
         leadCopy[0].list = list;
         let request = await fetch('/api/leads', {
             method: 'POST',
-            headers: {'Content-Type': 'application/Json'},
+            headers: { 'Content-Type': 'application/Json' },
             body: JSON.stringify(leadCopy[0])
         });
         let response = await request.json();
-        if (response.success){
+        if (response.success) {
             message.success(response.message)
         } else {
             message.error(response.message)
@@ -167,9 +139,7 @@ export default function SingleEmailSearch({credits, minusCredits}) {
                         placeholder={type === '' || type === "company" ? "Facebook" : "facebook.com"}
                     />
                 </Form.Item>
-                <Form.Item
-                // style={{ marginTop: 48 }}
-                >
+                <Form.Item>
                     <Button
                         size="large"
                         type="primary"
@@ -193,47 +163,47 @@ export default function SingleEmailSearch({credits, minusCredits}) {
 
                             let avatarStyle;
                             let tagColor;
-                            // item.score < 80 ? avatarStyle = {backgroundColor: '#f50'} : avatarStyle = {backgroundColor: '#87d068'};
-                            switch (item.status){
+                            switch (item.status) {
                                 case "valid":
                                     tagColor = "green";
-                                    avatarStyle = {backgroundColor: '#389E0D'}
-                                break;
+                                    avatarStyle = { backgroundColor: '#389E0D' }
+                                    break;
                                 case "unknown":
                                     tagColor = "orange";
-                                    avatarStyle = {backgroundColor: '#D46B08'}
-                                break;
+                                    avatarStyle = { backgroundColor: '#D46B08' }
+                                    break;
                                 case "unverified":
                                     tagColor = "red";
-                                    avatarStyle = {backgroundColor: '#CF1322'}
-                                break;
+                                    avatarStyle = { backgroundColor: '#CF1322' }
+                                    break;
                             };
 
-                        return (
-                            <List.Item
-                                actions={[
-                                    <Tooltip title="delete this contact">
-                                        <CloseCircleOutlined
-                                            onClick={() => setLead([])}
-                                        />
-                                    </Tooltip>,
-                                    <Dropdown.Button
-                                        overlay={saveMenu}
-                                        icon={<UnorderedListOutlined />}
-                                        placement="bottomRight"
-                                    >
-                                        Save to
+                            return (
+                                <List.Item
+                                    actions={[
+                                        <Tooltip title="delete this contact">
+                                            <CloseCircleOutlined
+                                                onClick={() => setLead([])}
+                                            />
+                                        </Tooltip>,
+                                        <Dropdown.Button
+                                            overlay={saveMenu}
+                                            icon={<UnorderedListOutlined />}
+                                            placement="bottomRight"
+                                        >
+                                            Save to
                                 </Dropdown.Button>
-                                ]}
-                            >
-                                <List.Item.Meta
-                                    avatar={<Avatar style={avatarStyle}>{item.score}</Avatar>}
-                                    title={`${item.firstname} ${item.lastname}`}
-                                    description={item.email}
-                                />
-                                <div><Tag color={tagColor}>{item.status}</Tag></div>
-                            </List.Item>
-                        )}}
+                                    ]}
+                                >
+                                    <List.Item.Meta
+                                        avatar={<Avatar style={avatarStyle}>{item.score}</Avatar>}
+                                        title={`${item.firstname} ${item.lastname}`}
+                                        description={item.email}
+                                    />
+                                    <div><Tag color={tagColor}>{item.status}</Tag></div>
+                                </List.Item>
+                            )
+                        }}
                     />
             }
         </div>

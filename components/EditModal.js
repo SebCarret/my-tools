@@ -3,17 +3,12 @@ import { Modal, Form, Input } from 'antd';
 
 const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
 
-    // console.log(contact);
-
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [company, setCompany] = useState('');
     const [domain, setDomain] = useState('');
     const [email, setEmail] = useState('');
-    // const [status, setStatus] = useState(contact.status);
-    // const [list, setList] = useState('');
     const [linkedinUrl, setLinkedinUrl] = useState('');
-    // const [contactToEdit, setContactToEdit] = useState({});
 
     useEffect(() => {
         setFirstname(contact.firstname);
@@ -21,7 +16,6 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
         setCompany(contact.company);
         setDomain(contact.domain);
         setEmail(contact.email);
-        // setList(contact.list);
         setLinkedinUrl(contact.linkedinUrl);
     }, [contact]);
 
@@ -33,45 +27,43 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
             company: company,
             domain: domain,
             email: email,
-            // list: list,
             key: contact.key,
             status: contact.status,
             linkedinUrl: linkedinUrl
         };
-        // console.log(updatedContact);
         confirmUpdating(updatedContact);
         showModal(false)
     }
 
     return (
         <Modal
-            title="Modifier ce contact ?"
+            title="Modify this contact ?"
             visible={isModalVisible}
-            okText="Modifier"
+            okText="Modify"
             onOk={onConfirmClick}
-            cancelText="Annuler"
+            cancelText="Cancel"
             onCancel={() => showModal(false)}
         >
             <Input
-                placeholder="Prénom"
+                placeholder="Firstname"
                 value={firstname}
                 onChange={(e) => setFirstname(e.target.value)}
                 style={{ marginBottom: 10 }}
             />
             <Input
-                placeholder="Nom"
+                placeholder="Lastname"
                 value={lastname}
                 onChange={(e) => setLastname(e.target.value)}
                 style={{ marginBottom: 10 }}
             />
             <Input
-                placeholder="Nom de la société"
+                placeholder="Company"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 style={{ marginBottom: 10 }}
             />
             <Input
-                placeholder="Site web"
+                placeholder="Website"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
                 style={{ marginBottom: 10 }}
@@ -83,17 +75,11 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
                 style={{ marginBottom: 10 }}
             />
             <Input
-                placeholder="URL du profil LinkedIn"
+                placeholder="LinkedIn URL"
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
                 style={{ marginBottom: 10 }}
             />
-            {/* <Input
-                placeholder="Liste"
-                value={list}
-                onChange={(e) => setList(e.target.value)}
-                style={{ marginBottom: 10 }}
-            /> */}
         </Modal>
     )
 };

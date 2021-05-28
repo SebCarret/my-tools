@@ -27,22 +27,13 @@ export default async function handler(req, res) {
             try {
                 let leadToFind = await leadsModel.findOne({ firstname: req.body.firstname, lastname: req.body.lastname });
                 if (leadToFind) {
-                    res.status(200).json({ success: false, message: 'contact déjà présent en base de données...' })
+                    res.status(200).json({ success: false, message: 'contact already present on database sorry...' })
                 } else {
-                    // let newLead = new leadsModel({
-                    //     firstname: req.body.firstname,
-                    //     lastname: req.body.lastname,
-                    //     company: req.body.company,
-                    //     domain: req.body.domain,
-                    //     email: req.body.email,
-                    //     linkedinUrl: req.body.linkedinUrl,
-                    //     list: req.body.list
-                    // });
                     let newLead = new leadsModel(req.body);
                     let leadSaved = await newLead.save();
                     leadSaved
-                        ? res.status(200).json({ success: true, message: 'contact sauvegardé !', contact: leadSaved })
-                        : res.status(400).json({ success: false, message: 'contact non sauvegardé... Veuillez rééssayez.' })
+                        ? res.status(200).json({ success: true, message: 'contact successfully saved !', contact: leadSaved })
+                        : res.status(400).json({ success: false, message: 'Error while saving... Please try again' })
                 }
             } catch (error) {
                 res.status(400).json({ success: false, error })
@@ -58,8 +49,8 @@ export default async function handler(req, res) {
                     }
                 };
                 deleteCount === req.body.length
-                    ? res.status(200).json({ success: true, message: 'contact(s) supprimé(s) !' })
-                    : res.status(400).json({ success: false, message: 'Erreur lors de la suppression... Veuillez rééssayez.' })
+                    ? res.status(200).json({ success: true, message: 'contact(s) successfully deleted !' })
+                    : res.status(400).json({ success: false, message: 'Error while deleting... Please try again' })
             } catch (error) {
                 res.status(400).json({ success: false, error })
             }

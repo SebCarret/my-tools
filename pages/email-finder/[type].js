@@ -4,7 +4,7 @@ import { SearchOutlined, CheckCircleOutlined, CalendarOutlined } from '@ant-desi
 import { useRouter } from 'next/router';
 import TopMenu from '../../components/TopMenu';
 import SingleSearch from '../../components/EmailSingleSearch';
-import UploadFile from '../../components/UploadFile';
+import SearchFromFile from '../../components/EmailFinderFromFile';
 
 export default function Upload({ credits }) {
 
@@ -14,9 +14,9 @@ export default function Upload({ credits }) {
     const router = useRouter();
     const { type } = router.query;
 
-    const handleFindCredits = () => {
+    const handleFindCredits = creditsAvailables => {
         if (findCredits > 0){
-            setFindCredits(findCredits - 1)
+            setFindCredits(creditsAvailables)
         }
     };
 
@@ -54,7 +54,7 @@ export default function Upload({ credits }) {
             {
                 type === 'single'
                     ? <SingleSearch credits={findCredits} minusCredits={handleFindCredits} />
-                    : <UploadFile />
+                    : <SearchFromFile credits={findCredits} minusCredits={handleFindCredits} />
             }
         </div>
 

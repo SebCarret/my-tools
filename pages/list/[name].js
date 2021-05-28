@@ -28,80 +28,50 @@ const List = ({ list }) => {
         const header = ["firstname", "lastname", "company", "domain", "email", "status", "linkedinUrl"]
         let finalHeaders = [];
         for (let title of header) {
-            if (title !== '_id' && title !== 'list' && title !== '__v' && title !== 'key') {
-                let columnTitle;
-                switch (title) {
-                    case 'firstname':
-                        columnTitle = "Prénom"
-                        break;
-                    case 'lastname':
-                        columnTitle = "Nom"
-                        break;
-                    case 'company':
-                        columnTitle = "Société"
-                        break;
-                    case 'domain':
-                        columnTitle = "Site web"
-                        break;
-                    case 'email':
-                        columnTitle = "Email"
-                        break;
-                    case 'status':
-                        columnTitle = "Statut"
-                        break;
-                    case 'linkedinUrl':
-                        columnTitle = "Profil Linkedin"
-                        break;
-                    default:
-                        console.log('yop');
-                }
-                if (columnTitle === "Statut") {
-                    finalHeaders.push({
-                        title: columnTitle,
-                        dataIndex: title,
-                        key: title,
-                        render: status => {
-                            let color;
-                            let emailStatus;
-                            switch (status) {
-                                case 'validated':
-                                    color = 'green';
-                                    emailStatus = 'validé'
-                                    break;
-                                case 'not valid':
-                                    color = 'red';
-                                    emailStatus = 'invalide'
-                                    break;
-                                case 'unknown':
-                                    color = 'orange';
-                                    emailStatus = 'non vérifié'
-                                    break;
-                                default:
-                                    emailStatus = 'pas d\'email'
-                            }
-                            return (<Tag color={color}>{emailStatus}</Tag>)
+            if (title === "status") {
+                finalHeaders.push({
+                    title: title,
+                    dataIndex: title,
+                    key: title,
+                    render: status => {
+                        let color;
+                        let emailStatus;
+                        switch (status) {
+                            case 'valid':
+                                color = 'green';
+                                emailStatus = 'valid';
+                                break;
+                            case 'unverified':
+                                color = 'red';
+                                emailStatus = 'unverified'
+                                break;
+                            case 'unknown':
+                                color = 'orange';
+                                emailStatus = 'unknown'
+                                break;
+                            default:
+                                emailStatus = 'No email'
                         }
-                    })
-                } else if (columnTitle === "Profil Linkedin") {
-                    finalHeaders.push({
-                        title: columnTitle,
-                        dataIndex: title,
-                        key: title,
-                        render: url => {
-                            if (url !== undefined && url !== null) {
-                                return (<Link href={url} target="_blank"><LinkedinOutlined /></Link>)
-                            }
-
+                        return (<Tag color={color}>{emailStatus}</Tag>)
+                    }
+                })
+            } else if (title === "linkedinUrl") {
+                finalHeaders.push({
+                    title: "LinkedIn URL",
+                    dataIndex: title,
+                    key: title,
+                    render: url => {
+                        if (url !== undefined && url !== null) {
+                            return (<Link href={url} target="_blank"><LinkedinOutlined /></Link>)
                         }
-                    })
-                } else {
-                    finalHeaders.push({
-                        title: columnTitle,
-                        dataIndex: title,
-                        key: title
-                    })
-                }
-
+                    }
+                })
+            } else {
+                finalHeaders.push({
+                    title: title,
+                    dataIndex: title,
+                    key: title
+                })
             }
         };
         setColumns(finalHeaders);
@@ -111,7 +81,6 @@ const List = ({ list }) => {
     const onDeleteClick = async () => {
         let datasCopy = [...datas];
         let contactsToDelete = [];
-        // console.log(selectedRows);
         for (let row of selectedRows) {
             let userToFind = datasCopy.find(user => user.key === row);
             if (userToFind) {
@@ -155,7 +124,7 @@ const List = ({ list }) => {
         });
         let response = await request.json();
         if (response.success) {
-            message.success('Contact mis à jour !')
+            message.success('Contact updated !')
             let datasCopy = [...datas];
             for (let i = 0; i < datasCopy.length; i++) {
                 if (datasCopy[i].key === contact.key) {
@@ -164,7 +133,7 @@ const List = ({ list }) => {
             };
             setDatas(datasCopy)
         } else {
-            message.error('Erreur lors de la mise à jour... Veuillez réessayer')
+            message.error('Error while updating... Please try again')
         }
     };
 
@@ -214,7 +183,7 @@ const List = ({ list }) => {
             });
             let response = await request.json();
             if (response.success) {
-                message.success(`Contacts tranférés dans la liste ${list} !`);
+                message.success(`Contacts moved to list ${list} !`);
                 setDatas(datasCopy)
             } else {
                 message.error(response.error)
@@ -226,10 +195,10 @@ const List = ({ list }) => {
     const menu = (
         <Menu onClick={handleListChange}>
             <Menu.Item key="1">
-                CEO
+                CEO list
             </Menu.Item>
             <Menu.Item key="2">
-                CTO
+                CTO list
             </Menu.Item>
         </Menu>
     )
@@ -237,7 +206,7 @@ const List = ({ list }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <TopMenu />
-            <h1 style={{ marginBottom: 25 }}>Liste sélectionnée : {name}</h1>
+            <h1 style={{ marginBottom: 25 }}>Selected list : {name}</h1>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <div style={{ width: '100%', marginBottom: 25, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
                     <Button
@@ -246,7 +215,7 @@ const List = ({ list }) => {
                         style={{ marginRight: 5 }}
                         onClick={() => setIsCreateVisible(true)}
                     >
-                        Créer un contact
+                        Create contact
                     </Button>
                     <Dropdown.Button
                         overlay={menu}
@@ -255,7 +224,7 @@ const List = ({ list }) => {
                         placement="topLeft"
                         style={{ marginRight: 5 }}
                     >
-                        Déplacer vers
+                        Move to
                     </Dropdown.Button>
                     <Button
                         icon={<EditOutlined />}
@@ -263,7 +232,7 @@ const List = ({ list }) => {
                         style={{ marginRight: 5 }}
                         onClick={onEditClick}
                     >
-                        Modifier le contact
+                        Update contact
                     </Button>
                     <Button
                         icon={<DeleteOutlined />}
@@ -274,8 +243,8 @@ const List = ({ list }) => {
                     >
                         {
                             selectedRows.length <= 1
-                                ? 'Supprimer le contact'
-                                : `Supprimer ${selectedRows.length} contacts`
+                                ? 'Delete contact'
+                                : `Delete ${selectedRows.length} contacts`
                         }
                     </Button>
                 </div>
