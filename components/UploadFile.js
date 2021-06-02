@@ -57,6 +57,7 @@ export default function UploadFile(props) {
                     ? <Button
                         icon={<UploadOutlined />}
                         onClick={handleOpenDialog}
+                        type="primary"
                     >
                         Browse file
                         </Button>

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Button, Tag, Table, Menu, Dropdown, message } from 'antd';
 import { MailOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import styles from '../styles/email-finder.module.css';
 import UploadFile from './UploadFile';
 import EmailFinderModal from './EmailFinderModal';
 
 const { CheckableTag } = Tag;
 
-export default function EMailFinderFromFile({credits, minusCredits}) {
+export default function EMailFinderFromFile({ credits, minusCredits }) {
 
     const [tempColumns, setTempColumns] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -73,7 +74,7 @@ export default function EMailFinderFromFile({credits, minusCredits}) {
                     obj.score = response.userInfos.score;
                     obj.linkedinUrl = response.userInfos.linkedinUrl;
                 }
-                if (obj.email){
+                if (obj.email) {
                     emailsToFind.push(obj)
                 }
             }
@@ -81,11 +82,11 @@ export default function EMailFinderFromFile({credits, minusCredits}) {
         setSelectedLeads(emailsToFind);
         minusCredits(credits - emailsToFind.length)
         setIsLoading(false);
-        if (emailsToFind.length > 0){
+        if (emailsToFind.length > 0) {
             setIsVisible(true)
         } else {
             message.error('No email found for these contacts sorry...')
-        } 
+        }
     };
 
     const showModal = visible => setIsVisible(visible);
@@ -101,6 +102,7 @@ export default function EMailFinderFromFile({credits, minusCredits}) {
                 key={`tag-${i}`}
                 checked={selectedTags.indexOf(tag) > -1}
                 color={selectedTags.indexOf(tag) > -1 ? "success" : "default"}
+                style={antStyles.tags}
                 onChange={checked => handleTagSelection(tag, checked)}
             >
                 {tag}
@@ -109,26 +111,31 @@ export default function EMailFinderFromFile({credits, minusCredits}) {
     });
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: 20, width: '100%' }}>
-            <UploadFile handleTempColumns={handleTempColumns} handleDatasToRead={handleDatasToRead} handleFileRemoving={handleFileRemoving} />
-            <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: 20, marginBottom: 20 }}>
-                {tagsList}
+        <div id={styles.fileSearchContainer}>
+            <div id={styles.uploadContainer}>
+                <UploadFile handleTempColumns={handleTempColumns} handleDatasToRead={handleDatasToRead} handleFileRemoving={handleFileRemoving} />
+                <div id={styles.uploadContent}>
+                    {
+                        tempColumns.length === 0
+                        ? <p id={styles.uploadText}>Upload a file and select required columns.</p>
+                        : tagsList
+                    }
+                </div>
             </div>
+
             {
                 columns.length === 0
                     ? null
-                    : <div>
-                        <div style={{ display: 'flex', marginBottom: 20 }}>
-                            <Button
-                                icon={<MailOutlined />}
-                                disabled={selectedRows.length < 1 ? true : false}
-                                loading={isLoading}
-                                style={{ marginRight: 5 }}
-                                onClick={onFindEmailClick}
-                            >
-                                Search email
+                    : <div id={styles.uploadTableContainer}>
+                        <Button
+                            icon={<MailOutlined />}
+                            disabled={selectedRows.length < 1 ? true : false}
+                            loading={isLoading}
+                            style={antStyles.emailButton}
+                            onClick={onFindEmailClick}
+                        >
+                            Search email
                             </Button>
-                        </div>
                         <Table
                             rowSelection={rowSelection}
                             columns={columns}
@@ -140,4 +147,9 @@ export default function EMailFinderFromFile({credits, minusCredits}) {
             <EmailFinderModal isModalVisible={isVisible} leads={selectedLeads} showModal={showModal} />
         </div>
     )
+};
+
+const antStyles = {
+    tags: { marginBottom: 5 },
+    emailButton: { marginRight: 5, marginTop: 20, marginBottom: 20 }
 };

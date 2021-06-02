@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Form, Input, Select, Button, List, Avatar, Tag, Tooltip, Dropdown, Menu, message } from 'antd';
 import { SearchOutlined, CloseCircleOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import styles from '../styles/email-finder.module.css';
 
 const Option = Select.Option;
 
@@ -75,7 +76,7 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
 
     return (
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div id={styles.container}>
             <Form layout="inline" form={form} onFinish={findEmail}>
                 <Form.Item
                     name="firstname"
@@ -87,7 +88,6 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
                     ]}
                 >
                     <Input
-                        size="large"
                         placeholder="John"
                     />
                 </Form.Item>
@@ -101,7 +101,6 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
                     ]}
                 >
                     <Input
-                        size="large"
                         placeholder="Doe"
                     />
                 </Form.Item>
@@ -115,9 +114,8 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
                     ]}
                 >
                     <Select
-                        size="large"
                         defaultValue="Choose a type"
-                        style={{ width: 198 }}
+                        style={antStyles.select}
                         onChange={onSelect}
                     >
                         <Option value="domain">Website</Option>
@@ -135,13 +133,11 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
                 >
                     <Input
                         disabled={type === '' ? true : false}
-                        size="large"
                         placeholder={type === '' || type === "company" ? "Facebook" : "facebook.com"}
                     />
                 </Form.Item>
                 <Form.Item>
                     <Button
-                        size="large"
                         type="primary"
                         htmlType="submit"
                         icon={<SearchOutlined />}
@@ -156,7 +152,7 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
                 lead.length === 0
                     ? null
                     : <List
-                        style={{ width: '66%', marginTop: 40, backgroundColor: 'white' }}
+                        style={antStyles.list}
                         bordered
                         dataSource={lead}
                         renderItem={item => {
@@ -208,4 +204,9 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
             }
         </div>
     )
+};
+
+const antStyles = {
+    select: { width: 200 },
+    list: { width: '66%', marginTop: 40, backgroundColor: 'white' }
 };

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Button, message, Dropdown, Menu } from 'antd';
-import { DeleteOutlined, EditOutlined, LinkedinOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, LinkedinOutlined, UnorderedListOutlined, UserAddOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { CSVDownloader } from 'react-papaparse';
 import DbConnect from '../../models/dbConnect';
 import leadsModel from '../../models/leads';
 import TopMenu from "../../components/TopMenu";
@@ -204,10 +205,23 @@ const List = ({ list }) => {
     )
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <TopMenu />
-            <h1 style={{ marginBottom: 25 }}>Selected list : {name}</h1>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <div style={{display: 'flex', alignItems: 'center', marginBottom: 25}}>
+                    <h1 style={{ marginBottom: 0, marginRight: 10 }}>Selected list : {name}</h1>
+                    <CSVDownloader
+                        data={datas}
+                        // type="button"
+                        filename={`${name}-list`}
+                    >
+                        <Button
+                            icon={<DownloadOutlined />}
+                        >
+                            Download list in CSV
+                        </Button>
+                    </CSVDownloader>
+                </div>
                 <div style={{ width: '100%', marginBottom: 25, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
                     <Button
                         type="primary"

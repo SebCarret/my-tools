@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Badge, Tooltip } from 'antd';
 import { SearchOutlined, CheckCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
+import styles from '../../styles/email-finder.module.css';
 import TopMenu from '../../components/TopMenu';
 import SingleSearch from '../../components/EmailSingleSearch';
 import SearchFromFile from '../../components/EmailFinderFromFile';
@@ -15,15 +16,15 @@ export default function Upload({ credits }) {
     const { type } = router.query;
 
     const handleFindCredits = creditsAvailables => {
-        if (findCredits > 0){
+        if (findCredits > 0) {
             setFindCredits(creditsAvailables)
         }
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', minHeight: '100vh' }}>
+        <div id={styles.container}>
             <TopMenu />
-            <div style={{ display: 'flex', width: '50%', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#595959', borderRadius: 9, padding: 10, opacity: 0.8 }}>
+            {/* <div style={{ display: 'flex', width: '50%', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#595959', borderRadius: 9, padding: 10, opacity: 0.8 }}>
                 <h2 style={{ marginBottom: 0, color: 'white' }}>
                     Hunter credits
                 </h2>
@@ -43,14 +44,31 @@ export default function Upload({ credits }) {
                         <p style={{ marginBottom: 0, marginLeft: 10, color: 'white' }}>{credits.date}</p>
                     </div>
                 </Tooltip>
+            </div> */}
+            <div id={styles.topContent}>
+                <div id={styles.titleContainer}>
+                    <h2 id={styles.title}>
+                        {
+                            type === 'single'
+                                ? 'Single search'
+                                : 'Upload a file'
+                        }
+                    </h2>
+                    <Badge count={findCredits}>
+                        <Tooltip title={`Credits availables until ${credits.date}`}>
+                            <SearchOutlined id={styles.searchPicto} />
+                        </Tooltip>
+                    </Badge>
+                </div>
+                <p>
+                    {
+                        type === 'single'
+                            ? 'Find a professional email with firstname, lastname and domain (or company name).'
+                            : 'Find emails from a list which must contains at least firstname, lastname, and domain (or company name).'
+                    }
+                </p>
             </div>
-            <h1 style={{ marginTop: 40, marginBottom: 40 }}>
-                {
-                    type === 'single'
-                        ? 'Single search'
-                        : 'Upload a file'
-                }
-            </h1>
+
             {
                 type === 'single'
                     ? <SingleSearch credits={findCredits} minusCredits={handleFindCredits} />
