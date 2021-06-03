@@ -177,7 +177,7 @@ const List = ({ list }) => {
                 }
             };
             let data = JSON.stringify(usersToMove);
-            let request = await fetch('/api/list', {
+            let request = await fetch('/api/list/change', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/Json' },
                 body: data

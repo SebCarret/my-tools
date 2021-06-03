@@ -10,14 +10,7 @@ export default async function handler(req, res) {
     switch (method) {
         case 'PUT':
             try {
-                const lead = await leadsModel.updateOne({ _id: req.body._id }, {
-                    firstname: req.body.firstname,
-                    lastname: req.body.lastname,
-                    company: req.body.company,
-                    domain: req.body.domain,
-                    email: req.body.email,
-                    linkedinUrl: req.body.linkedinUrl
-                });
+                const lead = await leadsModel.updateOne({ _id: req.body._id }, req.body);
                 res.status(200).json({ success: true, message: 'contact updated !' })
             } catch (error) {
                 res.status(400).json({ success: false, error })

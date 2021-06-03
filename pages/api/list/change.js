@@ -1,5 +1,5 @@
-import DbConnect from '../../models/dbConnect';
-import leadsModel from '../../models/leads';
+import DbConnect from '../../../models/dbConnect';
+import leadsModel from '../../../models/leads';
 
 export default async function handler(req, res) {
 
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
         }
         usersUpdated === req.body.length
             ? res.status(200).json({ success: true, message: 'list updated !' })
-            : res.status(400).json({ success: false, error: 'Erreur lors du transfert de liste... Veuillez réessayer.' })
+            : res.status(400).json({ success: false, error: 'Erreur during transfer... Please try again.' })
     } catch (error) {
         res.status(400).json({ success: false, error })
     }

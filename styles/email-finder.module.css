@@ -36,6 +36,13 @@
     align-items: center;
 }
 
+#listSearchContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 #fileSearchContainer {
     display: flex;
     flex-direction: column;

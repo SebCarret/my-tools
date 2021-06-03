@@ -6,6 +6,7 @@ import styles from '../../styles/email-finder.module.css';
 import TopMenu from '../../components/TopMenu';
 import SingleSearch from '../../components/EmailSingleSearch';
 import SearchFromFile from '../../components/EmailFinderFromFile';
+import SearchFromList from '../../components/EmailFinderFromList';
 
 export default function Upload({ credits }) {
 
@@ -21,59 +22,43 @@ export default function Upload({ credits }) {
         }
     };
 
+    let title;
+    let description;
+    let contentToDisplay;
+
+    switch (type){
+        case 'single':
+            title = 'Single search';
+            description = 'Find a professional email with firstname, lastname and domain (or company name).';
+            contentToDisplay = <SingleSearch credits={findCredits} minusCredits={handleFindCredits} />
+        break;
+        case 'upload':
+            title = 'Upload a file';
+            description = 'Find emails from a list which must contains at least firstname, lastname, and domain (or company name).';
+            contentToDisplay = <SearchFromFile credits={findCredits} minusCredits={handleFindCredits} />
+        break;
+        case 'list':
+            title = 'From your lists';
+            description = 'Select contacts from one of your list to find their emails.';
+            contentToDisplay = <SearchFromList credits={findCredits} minusCredits={handleFindCredits} />
+        break;
+    }
+
     return (
         <div id={styles.container}>
             <TopMenu />
-            {/* <div style={{ display: 'flex', width: '50%', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#595959', borderRadius: 9, padding: 10, opacity: 0.8 }}>
-                <h2 style={{ marginBottom: 0, color: 'white' }}>
-                    Hunter credits
-                </h2>
-                <Badge count={findCredits}>
-                    <Tooltip title="Email searches availables">
-                        <SearchOutlined style={{ fontSize: 25, color: 'white' }} />
-                    </Tooltip>
-                </Badge>
-                <Badge count={verificationCredits}>
-                    <Tooltip title="Email verifications availables">
-                        <CheckCircleOutlined style={{ fontSize: 25, color: 'white' }} />
-                    </Tooltip>
-                </Badge>
-                <Tooltip title="Credits reset date">
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <CalendarOutlined style={{ fontSize: 25, color: 'white' }} />
-                        <p style={{ marginBottom: 0, marginLeft: 10, color: 'white' }}>{credits.date}</p>
-                    </div>
-                </Tooltip>
-            </div> */}
             <div id={styles.topContent}>
                 <div id={styles.titleContainer}>
-                    <h2 id={styles.title}>
-                        {
-                            type === 'single'
-                                ? 'Single search'
-                                : 'Upload a file'
-                        }
-                    </h2>
+                    <h2 id={styles.title}>{title}</h2>
                     <Badge count={findCredits}>
                         <Tooltip title={`Credits availables until ${credits.date}`}>
                             <SearchOutlined id={styles.searchPicto} />
                         </Tooltip>
                     </Badge>
                 </div>
-                <p>
-                    {
-                        type === 'single'
-                            ? 'Find a professional email with firstname, lastname and domain (or company name).'
-                            : 'Find emails from a list which must contains at least firstname, lastname, and domain (or company name).'
-                    }
-                </p>
+                <p>{description}</p>
             </div>
-
-            {
-                type === 'single'
-                    ? <SingleSearch credits={findCredits} minusCredits={handleFindCredits} />
-                    : <SearchFromFile credits={findCredits} minusCredits={handleFindCredits} />
-            }
+            {contentToDisplay}
         </div>
 
     )

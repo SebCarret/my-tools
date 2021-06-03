@@ -36,6 +36,9 @@ export default function TopMenu() {
                 <Menu.Item key="mail:upload" icon={<UploadOutlined />}>
                     <Link href="/email-finder/upload">Upload file</Link>
                 </Menu.Item>
+                <Menu.Item key="mail:list" icon={<UnorderedListOutlined />}>
+                    <Link href="/email-finder/list">From a list</Link>
+                </Menu.Item>
             </SubMenu>
             <SubMenu key="linkedin" icon={<LinkedinOutlined />} title="LinkedIn tools">
                 <Menu.Item key="linkedin:search" icon={<SearchOutlined />}>

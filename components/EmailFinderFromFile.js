@@ -135,7 +135,7 @@ export default function EMailFinderFromFile({ credits, minusCredits }) {
                             onClick={onFindEmailClick}
                         >
                             Search email
-                            </Button>
+                        </Button>
                         <Table
                             rowSelection={rowSelection}
                             columns={columns}
