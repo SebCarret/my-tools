@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Select, message, Table, Button, Tag } from 'antd';
-import { LinkedinOutlined, MailOutlined } from '@ant-design/icons';
-import styles from '../styles/email-finder.module.css';
+import { LinkedinOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import styles from '../styles/email-verif.module.css';
 
 const { Option } = Select;
 
-export default function EmailFinderFromList({ credits, minusCredits }) {
+export default function EmailVerifFromList({ credits, minusCredits }) {
 
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
@@ -83,52 +83,36 @@ export default function EmailFinderFromList({ credits, minusCredits }) {
         setLoading(false)
     };
 
-    const onFindEmailClick = async () => {
+    const onVerifClick = async () => {
         setIsLoading(true);
         let datasCopy = [...datas];
-        let emailsFound = 0;
+        let emailsVerified = 0;
         for (let row of selectedRows) {
             let leadToFind = datasCopy.find(contact => contact.key === row);
             if (leadToFind) {
-                let obj = {
-                    firstname: leadToFind.firstname,
-                    lastname: leadToFind.lastname,
-                };
-                leadToFind.domain ? obj.domain = leadToFind.domain : obj.company = leadToFind.company;
-                let request = await fetch('/api/email-finder', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/Json' },
-                    body: JSON.stringify(obj)
-                })
+                let request = await fetch(`/api/verify-email?email=${leadToFind.email}`);
                 let response = await request.json();
                 if (response.success) {
-                    leadToFind.email = response.userInfos.email;
-                    leadToFind.status = response.userInfos.status;
-                    leadToFind.linkedinUrl = response.userInfos.linkedinUrl;
-                }
-                if (leadToFind.email) {
+                    emailsVerified++;
                     let updateRequest = await fetch('/api/leads', {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/Json' },
-                        body: JSON.stringify(leadToFind)
+                        body: JSON.stringify({
+                            _id: leadToFind._id,
+                            status: response.status
+                        })
                     });
                     let updateResponse = await updateRequest.json();
                     if (updateResponse.success) {
-                        emailsFound++;
-                        datasCopy[row] = leadToFind;
+                        datasCopy[row].status = response.status;
                         setDatas(datasCopy);
                         setSelectedRows([])
                     }
                 }
             }
         };
-        minusCredits(credits - emailsFound);
+        minusCredits(credits - emailsVerified);
         setIsLoading(false);
-        if (emailsFound === 0) {
-            message.error('No email found for these contacts sorry...')
-        } else {
-            message.success(`We found ${emailsFound} emails !`)
-        }
     };
 
     const onSelectChange = rows => {
@@ -141,7 +125,7 @@ export default function EmailFinderFromList({ credits, minusCredits }) {
     };
 
     return (
-        <div id={styles.listSearchContainer}>
+        <div id={styles.listContainer}>
             <div style={{ display: 'flex', justifyContent: 'flex-start', width: '50%' }}>
                 <Select
                     defaultValue="Please select a list"
@@ -159,13 +143,13 @@ export default function EmailFinderFromList({ credits, minusCredits }) {
                     ? null
                     : <div>
                         <Button
-                            icon={<MailOutlined />}
+                            icon={<CheckCircleOutlined />}
                             disabled={selectedRows.length < 1 ? true : false}
                             loading={isLoading}
                             style={antStyles.emailButton}
-                            onClick={onFindEmailClick}
+                            onClick={onVerifClick}
                         >
-                            Search email
+                            Verify email
                         </Button>
                         <Table columns={columns} dataSource={datas} rowSelection={rowSelection} bordered />
                     </div>

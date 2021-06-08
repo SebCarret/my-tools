@@ -1,0 +1,82 @@
+#container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#topContent {
+    width: 50%;
+    margin-top: 25px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#titleContainer {
+    margin-bottom: 10px;
+    display: flex;
+}
+
+#title {
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+#verifPicto {
+    font-size: 25px;
+}
+
+#singleContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#listContainer {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: flex-start; */
+    align-items: center;
+    width: 100%;
+}
+
+#fileVerifContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+#uploadContainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 50%;
+    height: 100px;
+    border-radius: 5%;
+    background-color: white;
+}
+
+#uploadContent {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 50%;
+    margin: 20px 0px;
+}
+
+#uploadText {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+
+#uploadTableContainer {
+    width: 50%;
+}

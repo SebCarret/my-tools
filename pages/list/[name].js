@@ -46,6 +46,10 @@ const List = ({ list }) => {
                                 color = 'red';
                                 emailStatus = 'unverified'
                                 break;
+                            case 'invalid':
+                                color = 'red';
+                                emailStatus = 'invalid'
+                                break;
                             case 'unknown':
                                 color = 'orange';
                                 emailStatus = 'unknown'
@@ -62,7 +66,7 @@ const List = ({ list }) => {
                     dataIndex: title,
                     key: title,
                     render: url => {
-                        if (url !== undefined && url !== null) {
+                        if (url !== undefined && url !== null && url !== "") {
                             return (<Link href={url} target="_blank"><LinkedinOutlined /></Link>)
                         }
                     }
@@ -208,7 +212,7 @@ const List = ({ list }) => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <TopMenu />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <div style={{display: 'flex', alignItems: 'center', marginBottom: 25}}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: 25 }}>
                     <h1 style={{ marginBottom: 0, marginRight: 10 }}>Selected list : {name}</h1>
                     <CSVDownloader
                         data={datas}

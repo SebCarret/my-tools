@@ -7,7 +7,8 @@ import {
     SearchOutlined,
     UploadOutlined,
     UserOutlined,
-    UserAddOutlined
+    UserAddOutlined,
+    CheckCircleOutlined
 } from '@ant-design/icons';
 import Link from 'next/link'
 
@@ -37,7 +38,18 @@ export default function TopMenu() {
                     <Link href="/email-finder/upload">Upload file</Link>
                 </Menu.Item>
                 <Menu.Item key="mail:list" icon={<UnorderedListOutlined />}>
-                    <Link href="/email-finder/list">From a list</Link>
+                    <Link href="/email-finder/list">From your lists</Link>
+                </Menu.Item>
+            </SubMenu>
+            <SubMenu key="verif" icon={<CheckCircleOutlined />} title="Verify email">
+                <Menu.Item key="verif:single" icon={<SearchOutlined />}>
+                    <Link href="/verify-email/single">Single verification</Link>
+                </Menu.Item>
+                <Menu.Item key="verif:upload" icon={<UploadOutlined />}>
+                    <Link href="/verify-email/upload">Upload file</Link>
+                </Menu.Item>
+                <Menu.Item key="verif:list" icon={<UnorderedListOutlined />}>
+                    <Link href="/verify-email/list">From your lists</Link>
                 </Menu.Item>
             </SubMenu>
             <SubMenu key="linkedin" icon={<LinkedinOutlined />} title="LinkedIn tools">

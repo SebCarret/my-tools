@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Badge, Tooltip } from 'antd';
-import { SearchOutlined, CheckCircleOutlined, CalendarOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import styles from '../../styles/email-finder.module.css';
 import TopMenu from '../../components/TopMenu';
@@ -11,7 +11,6 @@ import SearchFromList from '../../components/EmailFinderFromList';
 export default function Upload({ credits }) {
 
     const [findCredits, setFindCredits] = useState(credits.searches);
-    const [verificationCredits, setVerificationsCredits] = useState(credits.verifications);
 
     const router = useRouter();
     const { type } = router.query;
@@ -40,7 +39,7 @@ export default function Upload({ credits }) {
         case 'list':
             title = 'From your lists';
             description = 'Select contacts from one of your list to find their emails.';
-            contentToDisplay = <SearchFromList credits={findCredits} minusCredits={handleFindCredits} />
+            contentToDisplay = <SearchFromList credits={findCredits} minusCredits={handleFindCredits}/>
         break;
     }
 
@@ -73,8 +72,7 @@ export async function getServerSideProps() {
         props: {
             credits: {
                 date: response.data.reset_date,
-                searches: response.data.requests.searches.available - response.data.requests.searches.used,
-                verifications: response.data.requests.verifications.available - response.data.requests.verifications.used,
+                searches: response.data.requests.searches.available - response.data.requests.searches.used
             }
         }
     }
