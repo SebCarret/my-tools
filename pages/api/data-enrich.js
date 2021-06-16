@@ -2,6 +2,9 @@ import request from 'sync-request';
 
 export default function getInfos(req, res) {
 
+    const datas = JSON.stringify(req.body);
+    console.log(datas);
+
     try {
         new Promise(async (resolve, reject) => {
             let firstRequest = await request('POST', 'https://api.dropcontact.io/batch', {
@@ -9,7 +12,7 @@ export default function getInfos(req, res) {
                     'Content-Type': 'application/json',
                     'X-Access-Token': process.env.DROPCONTACT_APIKEY
                 },
-                body: req.body
+                body: datas
             });
             let firstResponse = await JSON.parse(firstRequest.getBody());
             console.log(firstResponse);
@@ -26,7 +29,7 @@ export default function getInfos(req, res) {
                     }
                 });
                 let getResponse = await JSON.parse(getRequest.getBody());
-                console.log(getResponse.data);
+                console.log(getResponse);
                 getResponse.success
                     ? res.status(200).json({ success: true, datas: getResponse.data })
                     : res.status(200).json({ success: false, error: getResponse.reason })

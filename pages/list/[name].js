@@ -67,7 +67,7 @@ const List = ({ list }) => {
                     key: title,
                     render: url => {
                         if (url !== undefined && url !== null && url !== "") {
-                            return (<Link href={url} target="_blank"><LinkedinOutlined /></Link>)
+                            return (<a href={url} target="_blank"><LinkedinOutlined style={{fontSize: 20, color: "#676767"}}/></a>)
                         }
                     }
                 })
