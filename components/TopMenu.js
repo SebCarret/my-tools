@@ -53,6 +53,11 @@ export default function TopMenu() {
                         <Link href="/verify-email/list">From your lists</Link>
                     </Menu.Item>
                 </Menu.ItemGroup>
+                <Menu.ItemGroup title="Send email">
+                    <Menu.Item key="mailing:single" icon={<MailOutlined />}>
+                        <Link href="/mailing/single">Single email</Link>
+                    </Menu.Item>
+                </Menu.ItemGroup>
             </SubMenu>
             <SubMenu key="linkedin" icon={<LinkedinOutlined />} title="LinkedIn tools">
                 <Menu.ItemGroup title="Search profile">
