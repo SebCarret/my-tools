@@ -106,47 +106,62 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
                 profilesToFind.push(obj);
             }
         };
-        let datasToFetch = JSON.stringify({
-            data: profilesToFind,
-            siren: "False",
-            language: 'en'
-        });
-        let request = await fetch('/api/data-enrich', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/Json' },
-            body: datasToFetch
-        })
-        let response = await request.json();
-        if (response.success) {
-            minusCredits(credits - response.datas.length);
-            for (let lead of response.datas) {
-                let leadToEnrich = datasCopy.find(e => e.lastname === lead.last_name);
-                if (leadToEnrich && lead.linkedin) {
-                    profilesFound++;
-                    const index = datasCopy.indexOf(leadToEnrich);
-                    leadToEnrich.linkedinUrl = `https://${lead.linkedin}`;
-                    if (lead.email) {
-                        leadToEnrich.email = lead.email[0].email;
-                        leadToEnrich.status = "unverified";
-                    }
-                    if (lead.website) leadToEnrich.domain = lead.website;
-                    datasCopy[index] = leadToEnrich;
-                    let updateRequest = await fetch('/api/leads', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/Json' },
-                        body: JSON.stringify(leadToEnrich)
-                    });
-                }
-            }
-            setDatas(datasCopy);
-            setSelectedRows([])
-            setIsLoading(false);
-            if (profilesFound === 0) {
-                message.error('No LinkedIn profiles found for these contacts sorry...')
+        new Promise(async (resolve, reject) => {
+            let datasToFetch = JSON.stringify({
+                data: profilesToFind,
+                siren: "False",
+                language: 'en'
+            });
+            let request = await fetch('/api/data-enrich', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/Json' },
+                body: datasToFetch
+            })
+            let response = await request.json();
+            if (response.success) {
+                minusCredits(response.credits);
+                resolve(response.requestId)
             } else {
-                message.success(`We found ${profilesFound} LinkedIn profiles !`)
+                message.error(response.error)
             }
-        };
+        })
+            .then(id => {
+                setTimeout(async () => {
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}`);
+                    let getResponse = await getRequest.json();
+                    if (getResponse.success) {
+                        for (let lead of getResponse.datas) {
+                            let leadToEnrich = datasCopy.find(e => e.lastname === lead.last_name);
+                            if (leadToEnrich && lead.linkedin) {
+                                profilesFound++;
+                                const index = datasCopy.indexOf(leadToEnrich);
+                                leadToEnrich.linkedinUrl = `https://${lead.linkedin}`;
+                                // if (lead.email) {
+                                //     leadToEnrich.email = lead.email[0].email;
+                                //     leadToEnrich.status = "unverified";
+                                // }
+                                // if (lead.website) leadToEnrich.domain = lead.website;
+                                datasCopy[index] = leadToEnrich;
+                                let updateRequest = await fetch('/api/leads', {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/Json' },
+                                    body: JSON.stringify(leadToEnrich)
+                                });
+                            }
+                        };
+                        setDatas(datasCopy);
+                        setSelectedRows([])
+                        if (profilesFound === 0) {
+                            message.error('No LinkedIn profiles found for these contacts sorry...')
+                        } else {
+                            message.success(`We found ${profilesFound} LinkedIn profiles !`)
+                        }
+                    } else {
+                        message.error(getResponse.error)
+                    };
+                    setIsLoading(false);
+                }, 30000)
+            })
     }
 
     const onSelectChange = rows => {

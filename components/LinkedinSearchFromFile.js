@@ -3,7 +3,6 @@ import { Button, Tag, Table, message, Dropdown, Menu } from 'antd';
 import { UserOutlined, LinkedinOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import styles from '../styles/linkedin-tools.search.module.css';
 import UploadFile from './UploadFile';
-// import EmailFinderModal from './EmailFinderModal';
 
 const { CheckableTag } = Tag;
 
@@ -14,10 +13,7 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
     const [datasToRead, setDatasToRead] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
-    const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    // const [selectedLeads, setSelectedLeads] = useState([]);
 
     const handleTempColumns = columns => setTempColumns(columns);
 
@@ -51,7 +47,7 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
         setSelectedRows(selectedRowKeys)
     };
 
-    const onFindProfilesClick = async () => {
+    const onFindProfilesClick = () => {
         let datasCopy = [...datasToRead];
         setIsLoading(true);
         let profilesFound = 0;
@@ -67,55 +63,69 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
                 profilesToFind.push(obj);
             }
         };
-        let datasToFetch = JSON.stringify({
-            data: profilesToFind,
-            siren: "False",
-            language: 'en'
-        });
-        let request = await fetch('/api/data-enrich', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/Json' },
-            body: datasToFetch
-        })
-        let response = await request.json();
-        if (response.success) {
-            minusCredits(credits - response.datas.length);
-            for (let lead of response.datas) {
-                let leadToEnrich = datasCopy.find(e => e.lastname === lead.last_name);
-                if (leadToEnrich && lead.linkedin) {
-                    profilesFound++;
-                    const index = datasCopy.indexOf(leadToEnrich);
-                    leadToEnrich.linkedinUrl = `https://${lead.linkedin}`;
-                    // if (lead.email) {
-                    //     leadToEnrich.email = lead.email[0].email;
-                    //     leadToEnrich.status = "unverified";
-                    // }
-                    // if (lead.website) leadToEnrich.domain = lead.website;
-                    datasCopy[index] = leadToEnrich;
-                }
-            };
-            let columnsCopy = [...columns];
-            columnsCopy.push({
-                title: 'linkedinUrl',
-                dataIndex: 'linkedinUrl',
-                key: 'linkedinUrl',
-                render: url => {
-                    if (url !== undefined && url !== null && url !== "") {
-                        return (<a href={url} target="_blank"><LinkedinOutlined style={{ fontSize: 20, color: "#676767" }} /></a>)
-                    }
-                }
+        new Promise(async (resolve, reject) => {
+            let datasToFetch = JSON.stringify({
+                data: profilesToFind,
+                siren: "False",
+                language: 'en'
             });
-            setColumns(columnsCopy)
-            setDatasToRead(datasCopy);
-            setSelectedRows([])
-            setIsLoading(false);
-            setIsSaving(true);
-            if (profilesFound === 0) {
-                message.error('No LinkedIn profiles found for these contacts sorry...')
+            let request = await fetch('/api/data-enrich', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/Json' },
+                body: datasToFetch
+            })
+            let response = await request.json();
+            if (response.success) {
+                minusCredits(response.credits);
+                resolve(response.requestId)
             } else {
-                message.success(`We found ${profilesFound} LinkedIn profiles !`)
+                message.error(response.error)
             }
-        };
+        })
+            .then(id => {
+                setTimeout(async () => {
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}`);
+                    let getResponse = await getRequest.json();
+                    if (getResponse.success) {
+                        for (let lead of getResponse.datas) {
+                            let leadToEnrich = datasCopy.find(e => e.lastname === lead.last_name);
+                            if (leadToEnrich && lead.linkedin) {
+                                profilesFound++;
+                                const index = datasCopy.indexOf(leadToEnrich);
+                                leadToEnrich.linkedinUrl = `https://${lead.linkedin}`;
+                                if (lead.email) {
+                                    leadToEnrich.email = lead.email[0].email;
+                                    leadToEnrich.status = "unverified";
+                                }
+                                if (lead.website) leadToEnrich.domain = lead.website;
+                                datasCopy[index] = leadToEnrich;
+                            }
+                        };
+                        let columnsCopy = [...columns];
+                        columnsCopy.push({
+                            title: 'linkedIn URL',
+                            dataIndex: 'linkedinUrl',
+                            key: 'linkedinUrl',
+                            render: url => {
+                                if (url !== undefined && url !== null && url !== "") {
+                                    return (<a href={url} target="_blank"><LinkedinOutlined style={{ fontSize: 20, color: "#676767" }} /></a>)
+                                }
+                            }
+                        });
+                        setColumns(columnsCopy)
+                        setDatasToRead(datasCopy);
+                        setSelectedRows([])
+                        if (profilesFound === 0) {
+                            message.error('No LinkedIn profiles found for these contacts sorry...')
+                        } else {
+                            message.success(`We found ${profilesFound} LinkedIn profiles !`)
+                        }
+                    } else {
+                        message.error(getResponse.error)
+                    };
+                    setIsLoading(false);
+                }, 30000)
+            })
     };
 
     const saveProfiles = async (e) => {
@@ -133,14 +143,13 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
                 });
                 let response = await request.json();
                 console.log(response);
-                if (response.success){
+                if (response.success) {
                     saveCount++
                 }
             }
         };
-        if(saveCount === selectedRows.length){
+        if (saveCount === selectedRows.length) {
             message.success('Contacts successfully saved !');
-            setIsSaving(false)
         }
     }
 
@@ -200,7 +209,7 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
                             <Dropdown.Button
                                 overlay={menu}
                                 icon={<UnorderedListOutlined />}
-                                disabled={!isSaving ? true : false}
+                                disabled={selectedRows.length < 1 ? true : false}
                                 style={antStyles.button}
                             >
                                 Save contacts to
@@ -212,10 +221,10 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
                             columns={columns}
                             dataSource={datasToRead}
                             bordered
+                            style={{backgroundColor: '#FFFFFF'}}
                         />
                     </div>
             }
-            {/* <EmailFinderModal isModalVisible={isVisible} leads={selectedLeads} showModal={showModal} /> */}
         </div>
     )
 };

@@ -11,38 +11,51 @@ export default function LinkedinSingleSearch({ credits, minusCredits }) {
 
     const [form] = Form.useForm();
 
-    const findProfile = async values => {
+    const findProfile = values => {
         setLoading(true);
-        let datas = JSON.stringify({
-            data: [{
-                first_name: values.firstname,
-                last_name: values.lastname,
-                company: values.company
-            }],
-            siren: "False",
-            language: 'en'
-        });
-        let request = await fetch('/api/data-enrich', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/Json' },
-            body: datas
-        });
-        let response = await request.json();
-        if (response.success) {
-            minusCredits(credits - 1);
-            if (response.datas[0].linkedin) {
-                values.linkedinUrl = `https://${response.datas[0].linkedin}`;
-                values.email = response.datas[0].email[0].email;
-                values.status = "unverified";
-                values.domain = response.datas[0].website;
-                setUser(values);
+        new Promise(async (resolve, reject) => {
+            let datas = JSON.stringify({
+                data: [{
+                    first_name: values.firstname,
+                    last_name: values.lastname,
+                    company: values.company
+                }],
+                siren: "False",
+                language: 'en'
+            });
+            let request = await fetch('/api/data-enrich', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/Json' },
+                body: datas
+            });
+            let response = await request.json();
+            if (response.success) {
+                minusCredits(response.credits);
+                resolve(response.requestId)
             } else {
-                message.error('Sorry, no profile found for this contact on LinkedIn...')
+                message.error(response.error)
             }
-        } else {
-            message.error(response.error)
-        }
-        setLoading(false)
+        })
+            .then(id => {
+                setTimeout(async () => {
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}`);
+                    let getResponse = await getRequest.json();
+                    if (getResponse.datas[0].linkedin) {
+                        values.linkedinUrl = `https://${getResponse.datas[0].linkedin}`;
+                        if (getResponse.datas[0].email) {
+                            values.email = getResponse.datas[0].email[0].email;
+                            values.status = "unverified";
+                        }
+                        if (getResponse.datas[0].website) values.domain = getResponse.datas[0].website;
+                        setUser(values);
+                        form.resetFields()
+                    } else {
+                        message.error('Sorry, no profile found for this contact on LinkedIn...')
+                    };
+                    setLoading(false)
+                }, 30000)
+
+            })
     };
 
     const saveToList = async (key, lead) => {
