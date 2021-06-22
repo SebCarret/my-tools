@@ -42,17 +42,4 @@ export default async function getInfos(req, res) {
             }
 
     }
-
-    // try {
-    //     new Promise(async (resolve, reject) => {
-
-    //         if (firstResponse.success) {
-    //             setTimeout(() => {
-    //                 resolve(firstResponse.request_id)
-    //             }, 10000)
-    //         }
-    //     })
-    // } catch (error) {
-    //     res.status(400).json({ success: false, error })
-    // }
 }
