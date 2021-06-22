@@ -15,6 +15,7 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
     const onFinish = async (values) => {
 
         setLoading(true);
+        if (values.email) values.status = "unverified";
 
         let user = JSON.stringify(values);
 

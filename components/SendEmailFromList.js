@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { Select, message, Table, Button, Tag } from 'antd';
-import { LinkedinOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import styles from '../styles/email-verif.module.css';
+import { Select, message, Table, Tag, Button } from 'antd';
+import { LinkedinOutlined, MailOutlined } from '@ant-design/icons';
+import styles from '../styles/email-finder.module.css';
 
 const { Option } = Select;
 
-export default function EmailVerifFromList({ credits, minusCredits }) {
+export default function sendEmailFromList() {
 
+    const [loading, setLoading] = useState(false);
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [template, setTemplate] = useState('');
 
     const handleSelection = async value => {
         setLoading(true);
@@ -59,7 +60,7 @@ export default function EmailVerifFromList({ credits, minusCredits }) {
                         key: title,
                         render: url => {
                             if (url) {
-                                return (<a href={url} target="_blank"><LinkedinOutlined style={antStyles.icon} /></a>)
+                                return (<a href={url} target="_blank"><LinkedinOutlined style={{ fontSize: 20, color: "#676767" }} /></a>)
                             }
                         }
                     })
@@ -82,36 +83,34 @@ export default function EmailVerifFromList({ credits, minusCredits }) {
         setLoading(false)
     };
 
-    const onVerifClick = async () => {
+    const chooseTemplate = value => {
+        value === 'first' ? setTemplate('template_tc8hq0b') : setTemplate('template_jvzhQ1xP')
+    };
+
+    const sendEmail = async () => {
         setIsLoading(true);
+        let timeOut = selectedRows.length * 1000;
+        const emailjs = (await import('emailjs-com')).default;
         let datasCopy = [...datas];
-        let emailsVerified = 0;
         for (let row of selectedRows) {
-            let leadToFind = datasCopy.find(contact => contact.key === row);
-            if (leadToFind) {
-                let request = await fetch(`/api/verify-email?email=${leadToFind.email}`);
-                let response = await request.json();
-                if (response.success) {
-                    emailsVerified++;
-                    let updateRequest = await fetch('/api/leads', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/Json' },
-                        body: JSON.stringify({
-                            _id: leadToFind._id,
-                            status: response.status
-                        })
-                    });
-                    let updateResponse = await updateRequest.json();
-                    if (updateResponse.success) {
-                        datasCopy[row].status = response.status;
-                        setDatas(datasCopy);
-                        setSelectedRows([])
-                    }
-                }
+            const receiver = datasCopy.find(e => e.key === row);
+            if (receiver) {
+                let template_params = {
+                    firstname: receiver.firstname,
+                    company: receiver.company,
+                    email: receiver.email,
+                    reply_to: process.env.NEXT_PUBLIC_EMAIL_SENDER
+                };
+                setTimeout(() => {
+                    emailjs.send('ovh', template, template_params, process.env.NEXT_PUBLIC_EMAILJS_ID)
+                        .then(response => console.log(response), error => console.log('FAILED...', error))
+                }, 1000)
             }
         };
-        minusCredits(credits - emailsVerified);
-        setIsLoading(false);
+        setTimeout(() => {
+            setIsLoading(false);
+            message.info('Emails were successfully sent to your contacts !');
+        }, timeOut);
     };
 
     const onSelectChange = rows => {
@@ -124,25 +123,34 @@ export default function EmailVerifFromList({ credits, minusCredits }) {
     };
 
     return (
-        <div id={styles.listContainer}>
+        <div id={styles.listSearchContainer}>
             <div style={{ display: 'flex', justifyContent: 'flex-start', width: '50%', marginBottom: 20 }}>
                 <Select
                     defaultValue="Please select a list"
                     loading={loading}
-                    style={antStyles.select}
+                    style={{ width: 200, marginRight: 5 }}
                     onChange={handleSelection}
                 >
                     <Option value="CEO">CEO</Option>
                     <Option value="CTO">CTO</Option>
                 </Select>
+                <Select
+                    defaultValue="Select your template"
+                    disabled={selectedRows.length < 1 ? true : false}
+                    style={{ width: 200, marginRight: 5 }}
+                    onChange={chooseTemplate}
+                >
+                    <Option value="first">First mail</Option>
+                    <Option value="second">Follow up</Option>
+                </Select>
                 <Button
-                    icon={<CheckCircleOutlined />}
+                    icon={<MailOutlined />}
                     disabled={selectedRows.length < 1 ? true : false}
                     loading={isLoading}
-                    style={antStyles.emailButton}
-                    onClick={onVerifClick}
+                    style={antStyles.button}
+                    onClick={sendEmail}
                 >
-                    Verify email
+                    {isLoading ? 'Processing...' : 'Send email'}
                 </Button>
             </div>
 
@@ -156,6 +164,5 @@ export default function EmailVerifFromList({ credits, minusCredits }) {
 };
 
 const antStyles = {
-    select: { width: 200, marginRight: 5 },
-    icon: { fontSize: 20, color: "#676767" }
+    button: { marginRight: 5 }
 };

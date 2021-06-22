@@ -27,17 +27,17 @@ export default function LinkedinSearchProfile({credits}) {
 
     switch (type) {
         case 'single':
-            title = 'Single profile search';
+            title = 'Single LinkedIn profile search';
             description = 'Find a LinkedIn profile with firstname, lastname and company name.';
             contentToDisplay = <LinkedinSingleSearch credits={creditsLeft} minusCredits={handleCredits} />
             break;
         case 'upload':
-            title = 'Search profiles from a CSV file';
+            title = 'Search Linkedin profiles from a file';
             description ='Required columns (case sensitive) : firstname, lastname and company.';
             contentToDisplay = <LinkedinSearchFromFile credits={creditsLeft} minusCredits={handleCredits} />
         break;
         case 'list':
-            title = 'Search profiles from one of your list';
+            title = 'Search LinkedIn profiles from one your lists';
             description = 'Select contacts from one of your list to find their LinkedIn profile.';
             contentToDisplay = <LinkedinSearchFromList credits={creditsLeft} minusCredits={handleCredits} />
             break;

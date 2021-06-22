@@ -27,17 +27,17 @@ export default function Upload({ credits }) {
 
     switch (type){
         case 'single':
-            title = 'Single search';
+            title = 'Single email search';
             description = 'Find a professional email with firstname, lastname and domain (or company name).';
             contentToDisplay = <SingleSearch credits={findCredits} minusCredits={handleFindCredits} />
         break;
         case 'upload':
-            title = 'Upload a file';
+            title = 'Find emails from a file';
             description = 'Find emails from a list which must contains at least firstname, lastname, and domain (or company name).';
             contentToDisplay = <SearchFromFile credits={findCredits} minusCredits={handleFindCredits} />
         break;
         case 'list':
-            title = 'From your lists';
+            title = 'Find emails from your lists';
             description = 'Select contacts from one of your list to find their emails.';
             contentToDisplay = <SearchFromList credits={findCredits} minusCredits={handleFindCredits}/>
         break;

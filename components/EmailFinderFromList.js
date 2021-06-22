@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Link from 'next/link';
 import { Select, message, Table, Button, Tag } from 'antd';
 import { LinkedinOutlined, MailOutlined } from '@ant-design/icons';
 import styles from '../styles/email-finder.module.css';
@@ -59,8 +58,8 @@ export default function EmailFinderFromList({ credits, minusCredits }) {
                         dataIndex: title,
                         key: title,
                         render: url => {
-                            if (url !== undefined && url !== null) {
-                                return (<Link href={url} target="_blank"><LinkedinOutlined /></Link>)
+                            if (url) {
+                                return (<a href={url} target="_blank"><LinkedinOutlined style={antStyles.icon} /></a>)
                             }
                         }
                     })
@@ -142,38 +141,36 @@ export default function EmailFinderFromList({ credits, minusCredits }) {
 
     return (
         <div id={styles.listSearchContainer}>
-            <div style={{ display: 'flex', justifyContent: 'flex-start', width: '50%' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', width: '50%', marginBottom: 20 }}>
                 <Select
                     defaultValue="Please select a list"
                     loading={loading}
-                    style={{ width: 200 }}
+                    style={antStyles.select}
                     onChange={handleSelection}
                 >
                     <Option value="CEO">CEO</Option>
                     <Option value="CTO">CTO</Option>
                 </Select>
+                <Button
+                    icon={<MailOutlined />}
+                    disabled={selectedRows.length < 1 ? true : false}
+                    loading={isLoading}
+                    onClick={onFindEmailClick}
+                >
+                    Search email
+                </Button>
             </div>
 
             {
                 datas.length === 0
                     ? null
-                    : <div>
-                        <Button
-                            icon={<MailOutlined />}
-                            disabled={selectedRows.length < 1 ? true : false}
-                            loading={isLoading}
-                            style={antStyles.emailButton}
-                            onClick={onFindEmailClick}
-                        >
-                            Search email
-                        </Button>
-                        <Table columns={columns} dataSource={datas} rowSelection={rowSelection} bordered />
-                    </div>
+                    : <Table columns={columns} dataSource={datas} rowSelection={rowSelection} bordered />
             }
         </div>
     )
 };
 
 const antStyles = {
-    emailButton: { marginRight: 5, marginTop: 20, marginBottom: 20 }
+    select: { width: 200, marginRight: 5 },
+    icon: {fontSize: 20, color: "#676767"}
 };

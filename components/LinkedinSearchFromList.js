@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Link from 'next/link';
 import { Select, message, Table, Button, Tag } from 'antd';
 import { LinkedinOutlined, MailOutlined } from '@ant-design/icons';
 import styles from '../styles/linkedin-tools.search.module.css';
@@ -59,8 +58,8 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
                         dataIndex: title,
                         key: title,
                         render: url => {
-                            if (url !== undefined && url !== null) {
-                                return (<Link href={url} target="_blank"><LinkedinOutlined /></Link>)
+                            if (url) {
+                                return (<a href={url} target="_blank"><LinkedinOutlined style={antStyles.icon} /></a>)
                             }
                         }
                     })
@@ -73,17 +72,10 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
                 }
             };
             setColumns(finalHeaders);
-            let finalDatas = [];
             for (let i = 0; i < response.list.length; i++) {
-                if (!response.list[i].linkedinUrl) {
-                    finalDatas.push(response.list[i])
-                }
+                response.list[i].key = i
             };
-            for (let j = 0; j < finalDatas.length; j++) {
-                finalDatas[j].key = j
-            };
-            // setDatas(response.list)
-            setDatas(finalDatas)
+            setDatas(response.list)
         } else {
             message.error(response.message)
         };
@@ -136,11 +128,6 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
                                 profilesFound++;
                                 const index = datasCopy.indexOf(leadToEnrich);
                                 leadToEnrich.linkedinUrl = `https://${lead.linkedin}`;
-                                // if (lead.email) {
-                                //     leadToEnrich.email = lead.email[0].email;
-                                //     leadToEnrich.status = "unverified";
-                                // }
-                                // if (lead.website) leadToEnrich.domain = lead.website;
                                 datasCopy[index] = leadToEnrich;
                                 let updateRequest = await fetch('/api/leads', {
                                     method: 'PUT',
@@ -175,31 +162,30 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
 
     return (
         <div id={styles.listSearchContainer}>
-            <div style={{ display: 'flex', justifyContent: 'flex-start', width: '50%' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', width: '50%', marginBottom: 20 }}>
                 <Select
                     defaultValue="Please select a list"
                     loading={loading}
-                    style={{ width: 200 }}
+                    style={antStyles.select}
                     onChange={handleSelection}
                 >
                     <Option value="CEO">CEO</Option>
                     <Option value="CTO">CTO</Option>
                 </Select>
+                <Button
+                    icon={<MailOutlined />}
+                    disabled={selectedRows.length < 1 ? true : false}
+                    loading={isLoading}
+                    onClick={onFindProfilesClick}
+                >
+                    Find profiles
+                </Button>
             </div>
 
             {
                 datas.length === 0
                     ? null
                     : <div>
-                        <Button
-                            icon={<MailOutlined />}
-                            disabled={selectedRows.length < 1 ? true : false}
-                            loading={isLoading}
-                            style={antStyles.button}
-                            onClick={onFindProfilesClick}
-                        >
-                            Find profiles
-                        </Button>
                         <Table columns={columns} dataSource={datas} rowSelection={rowSelection} bordered />
                     </div>
             }
@@ -208,5 +194,6 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
 };
 
 const antStyles = {
-    button: { marginRight: 5, marginTop: 20, marginBottom: 20 }
+    select: { width: 200, marginRight: 5 },
+    icon: { fontSize: 20, color: "#676767" }
 };

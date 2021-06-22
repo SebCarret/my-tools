@@ -27,17 +27,17 @@ export default function Upload({ credits }) {
 
     switch (type){
         case 'single':
-            title = 'Single verification';
+            title = 'Single email verification';
             description = 'Verify an email by filling in the form just below.';
             contentToDisplay = <SingleVerif credits={verificationCredits} minusCredits={handleVerifCredits} />
         break;
         case 'upload':
-            title = 'Upload a file';
+            title = 'Verify emails from file';
             description = 'Verify emails of your choice from an uploaded list.';
             contentToDisplay = <FileVerif credits={verificationCredits} minusCredits={handleVerifCredits} />
         break;
         case 'list':
-            title = 'From your lists';
+            title = 'Verify emails from your lists';
             description = 'Select contacts from one of your list to verify their emails.';
             contentToDisplay = <ListVerif credits={verificationCredits} minusCredits={handleVerifCredits} />
         break;
