@@ -57,6 +57,9 @@ export default function TopMenu() {
                 <Menu.Item key="mailing:single" icon={<UserOutlined />}>
                     <Link href="/mailing/single">Single email</Link>
                 </Menu.Item>
+                <Menu.Item key="mailing:upload" icon={<UploadOutlined />}>
+                    <Link href="/mailing/upload">Upload file</Link>
+                </Menu.Item>
                 <Menu.Item key="mailing:list" icon={<UnorderedListOutlined />}>
                     <Link href="/mailing/list">From your lists</Link>
                 </Menu.Item>

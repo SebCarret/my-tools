@@ -3,6 +3,7 @@ import TopMenu from '../../components/TopMenu';
 import { useRouter } from 'next/router';
 import SendSingleEmail from '../../components/SendSingleEmail';
 import SendEmailFromList from '../../components/SendEmailFromList';
+import SendEmailFromFile from '../../components/SendemailFromFile';
 
 export default function mailingContainer() {
 
@@ -19,11 +20,11 @@ export default function mailingContainer() {
             description = 'Please fill in all fields below to respect dynamic variables set in your EmailJS template.';
             contentToDisplay = <SendSingleEmail />
         break;
-        // case 'upload':
-        //     title = 'Upload a file';
-        //     description = 'Verify emails of your choice from an uploaded list.';
-        //     contentToDisplay = <FileVerif credits={verificationCredits} minusCredits={handleVerifCredits} />
-        // break;
+        case 'upload':
+            title = 'Send emails from a CSV file';
+            description = 'Select contacts from an uploaded list to send them emails based on your EmailJS templates.';
+            contentToDisplay = <SendEmailFromFile />
+        break;
         case 'list':
             title = 'Send emails from your lists';
             description = 'Select contacts from one of your list to send them emails based on your EmailJS templates.';
