@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, Input, Select, Button, List, Avatar, Tag, Tooltip, Dropdown, Menu, message } from 'antd';
 import { SearchOutlined, CloseCircleOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import styles from '../styles/email-finder.module.css';
+import { useSelector } from 'react-redux';
 
 const Option = Select.Option;
 
@@ -10,6 +11,8 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
     const [type, setType] = useState('');
     const [loading, setLoading] = useState(false);
     const [lead, setLead] = useState([]);
+
+    const lists = useSelector(state => state.lists);
 
     const [form] = Form.useForm();
 
@@ -39,15 +42,14 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
             datas.linkedinUrl = response.userInfos.linkedinUrl;
             minusCredits(credits - 1)
         } else {
-            message.error("Something's wrong with the API call... PLease try again")
+            message.error("Something's wrong with the API call... Please try again")
         }
         setLead([...lead, datas]);
         setLoading(false)
     };
 
     const saveToList = async (e) => {
-        console.log(e.key);
-        let list = e.key === "1" ? "CEO" : "CTO";
+        let list = e.key;
         let leadCopy = [...lead];
         leadCopy[0].list = list;
         let request = await fetch('/api/leads', {
@@ -65,12 +67,15 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
 
     const saveMenu = (
         <Menu onClick={saveToList}>
-            <Menu.Item key="1">
-                CEO list
-            </Menu.Item>
-            <Menu.Item key="2">
-                CTO list
-            </Menu.Item>
+            {
+                lists.map(name => {
+                    return (
+                        <Menu.Item key={name}>
+                            {`${name} list`}
+                        </Menu.Item>
+                    )
+                })
+            }
         </Menu>
     );
 
@@ -188,7 +193,7 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
                                             placement="bottomRight"
                                         >
                                             Save to
-                                </Dropdown.Button>
+                                        </Dropdown.Button>
                                     ]}
                                 >
                                     <List.Item.Meta

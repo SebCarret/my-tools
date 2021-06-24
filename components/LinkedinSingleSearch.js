@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Form, Input, Button, Card, Avatar, Tooltip, Dropdown, Menu, message } from 'antd';
 import { SearchOutlined, LoadingOutlined, LinkedinOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 
 const { Meta } = Card;
 
@@ -8,6 +9,8 @@ export default function LinkedinSingleSearch({ credits, minusCredits }) {
 
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState(null);
+
+    const lists = useSelector(state => state.lists);
 
     const [form] = Form.useForm();
 
@@ -75,8 +78,11 @@ export default function LinkedinSingleSearch({ credits, minusCredits }) {
 
     const menu = (
         <Menu onClick={e => saveToList(e.key, user)}>
-            <Menu.Item key="CEO">CEO list</Menu.Item>
-            <Menu.Item key="CTO">CTO list</Menu.Item>
+            {
+                lists.map(name => {
+                    return (<Menu.Item key={name}>{name} list</Menu.Item>)
+                })
+            }
         </Menu>)
 
     return (

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Select, message, Table, Button, Tag } from 'antd';
 import { LinkedinOutlined, MailOutlined } from '@ant-design/icons';
 import styles from '../styles/linkedin-tools.search.module.css';
+import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
@@ -12,6 +13,8 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
     const [loading, setLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
+
+    const lists = useSelector(state => state.lists);
 
     const handleSelection = async value => {
         setLoading(true);
@@ -169,8 +172,11 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
                     style={antStyles.select}
                     onChange={handleSelection}
                 >
-                    <Option value="CEO">CEO</Option>
-                    <Option value="CTO">CTO</Option>
+                    {
+                        lists.map(name => {
+                            return (<Option value={name}>{name}</Option>)
+                        })
+                    }
                 </Select>
                 <Button
                     icon={<MailOutlined />}

@@ -114,7 +114,7 @@ export default function sendEmailFromFile() {
             {
                 columns.length === 0
                     ? null
-                    : <div id={styles.uploadTableContainer}>
+                    : <div>
                         <div style={{display: 'flex', marginTop: 20, marginBottom: 20}}>
                             <Select
                                 defaultValue="Select your template"

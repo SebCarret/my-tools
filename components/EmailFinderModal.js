@@ -1,10 +1,13 @@
 import { List, Modal, Avatar, Tag, Dropdown, Menu, message } from 'antd';
 import { UnorderedListOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 
 export default function EmailFinderModal({ isModalVisible, leads, showModal }) {
 
+    const lists = useSelector(state => state.lists);
+
     const saveToList = async (key, lead) => {
-        let list = key === "1" ? "CEO" : "CTO";
+        let list = key;
         lead.list = list;
         let request = await fetch('/api/leads', {
             method: 'POST',
@@ -55,19 +58,22 @@ export default function EmailFinderModal({ isModalVisible, leads, showModal }) {
                             actions={[
                                 <Dropdown.Button
                                     overlay={
-                                    <Menu onClick={e => saveToList(e.key, item)}>
-                                    <Menu.Item key="1">
-                                        CEO list
-                                    </Menu.Item>
-                                    <Menu.Item key="2">
-                                        CTO list
-                                    </Menu.Item>
-                                </Menu>}
+                                        <Menu onClick={e => saveToList(e.key, item)}>
+                                            {
+                                                lists.map(name => {
+                                                    return (
+                                                        <Menu.Item key={name}>
+                                                            {`${name} list`}
+                                                        </Menu.Item>
+                                                    )
+                                                })
+                                            }
+                                        </Menu>}
                                     icon={<UnorderedListOutlined />}
                                     placement="topLeft"
                                 >
                                     Save to
-                            </Dropdown.Button>
+                                </Dropdown.Button>
                             ]}
                         >
                             <List.Item.Meta

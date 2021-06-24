@@ -2,18 +2,20 @@ import { useEffect, useState } from 'react';
 import { Table, Tag, Button, message, Dropdown, Menu } from 'antd';
 import { DeleteOutlined, EditOutlined, LinkedinOutlined, UnorderedListOutlined, UserAddOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { CSVDownloader } from 'react-papaparse';
 import DbConnect from '../../models/dbConnect';
 import leadsModel from '../../models/leads';
 import TopMenu from "../../components/TopMenu";
 import CreateModal from '../../components/CreateModal';
 import EditModal from '../../components/EditModal';
+import { useSelector } from 'react-redux';
 
 const List = ({ list }) => {
 
     const router = useRouter();
     const { name } = router.query;
+
+    const lists = useSelector(state => state.lists);
 
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
@@ -67,7 +69,7 @@ const List = ({ list }) => {
                     key: title,
                     render: url => {
                         if (url !== undefined && url !== null && url !== "") {
-                            return (<a href={url} target="_blank"><LinkedinOutlined style={{fontSize: 20, color: "#676767"}}/></a>)
+                            return (<a href={url} target="_blank"><LinkedinOutlined style={{ fontSize: 20, color: "#676767" }} /></a>)
                         }
                     }
                 })
@@ -164,9 +166,9 @@ const List = ({ list }) => {
     };
 
     const handleListChange = async e => {
-        let list = e.key === "1" ? "CEO" : "CTO"
+        let list = e.key;
         if (list === name) {
-            message.error(`Vous êtes actuellement dans la liste ${name}...`)
+            message.error(`You're already in ${name} list...`)
         } else {
             let datasCopy = [...datas];
             let usersToMove = [];
@@ -188,7 +190,7 @@ const List = ({ list }) => {
             });
             let response = await request.json();
             if (response.success) {
-                message.success(`Contacts moved to list ${list} !`);
+                message.success(`Contacts moved to ${list} list !`);
                 setDatas(datasCopy)
             } else {
                 message.error(response.error)
@@ -199,12 +201,15 @@ const List = ({ list }) => {
 
     const menu = (
         <Menu onClick={handleListChange}>
-            <Menu.Item key="1">
-                CEO list
-            </Menu.Item>
-            <Menu.Item key="2">
-                CTO list
-            </Menu.Item>
+            {
+                lists.map(list => {
+                    return (
+                        <Menu.Item key={list}>
+                            {`${list} list`}
+                        </Menu.Item>
+                    )
+                })
+            }
         </Menu>
     )
 
@@ -213,7 +218,7 @@ const List = ({ list }) => {
             <TopMenu />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: 25 }}>
-                    <h1 style={{ marginBottom: 0, marginRight: 10 }}>Selected list : {name}</h1>
+                    <h2 style={{ marginBottom: 0, marginRight: 10 }}>Selected list : {name}</h2>
                     <CSVDownloader
                         data={datas}
                         // type="button"
@@ -269,7 +274,7 @@ const List = ({ list }) => {
                 <Table rowSelection={rowSelection} columns={columns} dataSource={datas} />
             </div>
             <EditModal isModalVisible={isEditVisible} showModal={handleEditModal} contact={contactToEdit} confirmUpdating={confirmUpdating} />
-            <CreateModal isModalVisible={isCreateVisible} showModal={handleCreateModal} listName={name} addContact={addContact} />
+            <CreateModal isModalVisible={isCreateVisible} showModal={handleCreateModal} listName={name} addContact={addContact} lists={lists} />
         </div>
     )
 };

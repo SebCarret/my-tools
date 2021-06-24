@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Select, message, Table, Tag, Button } from 'antd';
 import { LinkedinOutlined, MailOutlined } from '@ant-design/icons';
 import styles from '../styles/email-finder.module.css';
+import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
@@ -13,6 +14,8 @@ export default function sendEmailFromList() {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [template, setTemplate] = useState('');
+
+    const lists = useSelector(state => state.lists);
 
     const handleSelection = async value => {
         setLoading(true);
@@ -131,8 +134,11 @@ export default function sendEmailFromList() {
                     style={{ width: 200, marginRight: 5 }}
                     onChange={handleSelection}
                 >
-                    <Option value="CEO">CEO</Option>
-                    <Option value="CTO">CTO</Option>
+                    {
+                        lists.map(name => {
+                            return (<Option value={name}>{name}</Option>)
+                        })
+                    }
                 </Select>
                 <Select
                     defaultValue="Select your template"

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Form, Select, Input, Button, message } from 'antd';
+import DbConnect from '../models/dbConnect';
+import leadsModel from '../models/leads';
 import TopMenu from '../components/TopMenu';
+import { useDispatch } from 'react-redux'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -14,13 +17,26 @@ const content = {
   alignItems: 'center'
 }
 
-export default function Home() {
+export default function Home({ lists }) {
 
   const [firstname, setFirstName] = useState('');
   const [lastname, setLastName] = useState('');
   const [company, setCompany] = useState('');
   const [list, setList] = useState('');
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+
+    if (lists.length > 0) {
+      let finalList = [];
+      for (let list of lists) {
+        finalList.push(list._id)
+      };
+      dispatch({ type: 'loadList', lists: finalList })
+    }
+  }, []);
 
   const onSelect = value => setList(value);
 
@@ -46,7 +62,7 @@ export default function Home() {
       : message.error(response.message)
 
     setLoading(false)
-  }
+  };
 
   return (
 
@@ -129,4 +145,15 @@ export default function Home() {
       </div>
     </div>
   )
+};
+
+export async function getServerSideProps() {
+  await DbConnect();
+  const aggregation = leadsModel.aggregate();
+  aggregation.group({ _id: "$list" });
+  const lists = await aggregation.exec();
+
+  return {
+    props: { lists }
+  }
 }

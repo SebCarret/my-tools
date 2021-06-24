@@ -113,7 +113,7 @@ export default function EMailFinderFromFile({ credits, minusCredits }) {
             {
                 columns.length === 0
                     ? null
-                    : <div id={styles.uploadTableContainer}>
+                    : <div>
                         <Button
                             icon={<CheckCircleOutlined />}
                             disabled={selectedRows.length < 1 ? true : false}

@@ -4,7 +4,7 @@ import { Modal, Form, Select, Input, Button, message } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-export default function createModal({ isModalVisible, showModal, listName, addContact }) {
+export default function createModal({ isModalVisible, showModal, listName, addContact, lists }) {
 
     const [loading, setLoading] = useState(false);
 
@@ -130,11 +130,11 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
 
                 <FormItem
                     name="list"
-                    label="List"
+                    label="List to save"
                     rules={[
                         {
                             required: true,
-                            message: "Please choose a list"
+                            message: "Please select a list"
                         }
                     ]}
                 >
@@ -144,8 +144,13 @@ export default function createModal({ isModalVisible, showModal, listName, addCo
                         style={{ width: 192 }}
                         onChange={onSelect}
                     >
-                        <Option value="CEO">CEO</Option>
-                        <Option value="CTO">CTO</Option>
+                        {
+                            lists.map(name => {
+                                return (
+                                    <Option value={name}>{name}</Option>
+                                )
+                            })
+                        }
                     </Select>
                 </FormItem>
 

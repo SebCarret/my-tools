@@ -3,6 +3,7 @@ import { Button, Tag, Table, message, Dropdown, Menu } from 'antd';
 import { UserOutlined, LinkedinOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import styles from '../styles/linkedin-tools.search.module.css';
 import UploadFile from './UploadFile';
+import { useSelector } from 'react-redux';
 
 const { CheckableTag } = Tag;
 
@@ -14,6 +15,8 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
     const [selectedTags, setSelectedTags] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const lists = useSelector(state => state.lists);
 
     const handleTempColumns = columns => setTempColumns(columns);
 
@@ -155,8 +158,11 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
 
     const menu = (
         <Menu onClick={saveProfiles}>
-            <Menu.Item key="CEO">CEO list</Menu.Item>
-            <Menu.Item key="CTO">CTO list</Menu.Item>
+            {
+                lists.map(name => {
+                    return (<Menu.Item key={name}>{name} list</Menu.Item>)
+                })
+            }
         </Menu>
     );
 
@@ -195,7 +201,7 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
             {
                 columns.length === 0
                     ? null
-                    : <div id={styles.uploadTableContainer}>
+                    : <div>
                         <div style={{ display: 'flex' }}>
                             <Button
                                 icon={<UserOutlined />}

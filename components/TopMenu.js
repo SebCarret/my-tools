@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu } from 'antd';
+import { Menu, Button } from 'antd';
 import {
     UnorderedListOutlined,
     MailOutlined,
@@ -9,27 +9,46 @@ import {
     UserOutlined,
     UserAddOutlined,
     CheckCircleOutlined,
-    SendOutlined
+    SendOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
-import Link from 'next/link'
+import Link from 'next/link';
+import { useSelector } from 'react-redux';
 
 const { SubMenu } = Menu;
 
 export default function TopMenu() {
 
     const [current, setCurrent] = useState('list');
+    const lists = useSelector(state => state.lists);
 
     const menuSelect = e => setCurrent(e.key)
 
     return (
         <Menu style={styles.menu} onClick={menuSelect} selectedKeys={current} mode="horizontal">
             <SubMenu key="list" icon={<UnorderedListOutlined />} title="Your lists">
-                <Menu.Item key="list:CEO">
+                {
+                    lists.map(list => {
+                        return (
+                            <Menu.Item key={`list:${list}`} icon={<UnorderedListOutlined onClick={() => console.log(`clic sur ${list}`)} />}>
+                                <Link href={`/list/${list}`}>{list}</Link>
+                            </Menu.Item>
+                        )
+                    })
+                }
+                <Menu.Item key="list:create">
+                    <Link href="/create-list">
+                        <Button icon={<PlusOutlined />} style={{ width: '100%' }}>
+                            Create list
+                        </Button>
+                    </Link>
+                </Menu.Item>
+                {/* <Menu.Item key="list:CEO">
                     <Link href="/list/CEO">CEO</Link>
                 </Menu.Item>
                 <Menu.Item key="list:CTO">
                     <Link href="/list/CTO">CTO</Link>
-                </Menu.Item>
+                </Menu.Item> */}
             </SubMenu>
             <SubMenu key="mail" icon={<MailOutlined />} title="Email finder">
                 <Menu.Item key="mail:single" icon={<SearchOutlined />}>

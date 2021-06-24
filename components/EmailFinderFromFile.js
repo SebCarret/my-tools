@@ -126,7 +126,7 @@ export default function EMailFinderFromFile({ credits, minusCredits }) {
             {
                 columns.length === 0
                     ? null
-                    : <div id={styles.uploadTableContainer}>
+                    : <div>
                         <Button
                             icon={<MailOutlined />}
                             disabled={selectedRows.length < 1 ? true : false}
