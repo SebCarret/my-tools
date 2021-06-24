@@ -30,7 +30,7 @@ export default function TopMenu() {
                 {
                     lists.map(list => {
                         return (
-                            <Menu.Item key={`list:${list}`} icon={<UnorderedListOutlined onClick={() => console.log(`clic sur ${list}`)} />}>
+                            <Menu.Item key={`list:${list}`} icon={<UnorderedListOutlined />}>
                                 <Link href={`/list/${list}`}>{list}</Link>
                             </Menu.Item>
                         )
@@ -43,12 +43,6 @@ export default function TopMenu() {
                         </Button>
                     </Link>
                 </Menu.Item>
-                {/* <Menu.Item key="list:CEO">
-                    <Link href="/list/CEO">CEO</Link>
-                </Menu.Item>
-                <Menu.Item key="list:CTO">
-                    <Link href="/list/CTO">CTO</Link>
-                </Menu.Item> */}
             </SubMenu>
             <SubMenu key="mail" icon={<MailOutlined />} title="Email finder">
                 <Menu.Item key="mail:single" icon={<SearchOutlined />}>
