@@ -1,159 +1,124 @@
 import { useState, useEffect } from 'react';
-import { Form, Select, Input, Button, message } from 'antd';
-import DbConnect from '../models/dbConnect';
-import leadsModel from '../models/leads';
-import TopMenu from '../components/TopMenu';
-import { useDispatch } from 'react-redux'
+import { Form, Input, Button, message } from 'antd';
+import { LoginOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/router';
+import LoadingDatas from '../components/LoadingDatas';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 
-const content = {
-  // marginTop: 50,
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'center'
-}
+export default function Login() {
 
-export default function Home({ lists }) {
-
-  const [firstname, setFirstName] = useState('');
-  const [lastname, setLastName] = useState('');
-  const [company, setCompany] = useState('');
-  const [list, setList] = useState('');
   const [loading, setLoading] = useState(false);
+  const [waiting, setWaiting] = useState(true);
 
-  const dispatch = useDispatch();
+  const router = useRouter();
 
   useEffect(() => {
-
-    if (lists.length > 0) {
-      let finalList = [];
-      for (let list of lists) {
-        finalList.push(list._id)
-      };
-      dispatch({ type: 'loadList', lists: finalList })
+    if (typeof window !== 'undefined') {
+      const admin = window.localStorage.admin;
+      if (admin) {
+        router.push('/home')
+      } else {
+        setWaiting(false)
+      }
     }
   }, []);
 
-  const onSelect = value => setList(value);
-
-  const onSaveClick = async () => {
-
+  const adminLogin = async values => {
     setLoading(true);
-
-    let user = JSON.stringify({
-      firstname: firstname,
-      lastname: lastname,
-      company: company,
-      list: list
-    });
-
-    let request = await fetch('/api/leads', {
+    let request = await fetch('/api/admin/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/Json' },
-      body: user
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values)
     });
     let response = await request.json();
-    response.success
-      ? message.success(response.message)
-      : message.error(response.message)
-
+    if (response.success) {
+      const adminDatas = {
+        id: response.admin._id,
+        firstname: response.admin.firstname
+      };
+      localStorage.setItem('admin', JSON.stringify(adminDatas));
+      router.push('/home')
+    } else {
+      message.error(response.error)
+    };
     setLoading(false)
   };
 
-  return (
+  if (waiting) {
+    return <LoadingDatas />
+  } else {
+    return (
 
-    <div style={content}>
-      <TopMenu />
-      <h1>Enregistre un nouveau contact :</h1>
-      {/* <div className="text-center mb-5">
-        <Link href="#">
-          <a className="logo mr-0">
-            <SmileFilled size={48} strokeWidth={1} />
-          </a>
-        </Link>
+      <div style={styles.content}>
+        <h1 style={styles.title}>Welcome on myTools ! Please login</h1>
+        <div>
+          <Form layout="vertical" style={{ width: 300 }} onFinish={adminLogin}>
 
-        <p className="mb-0 mt-3 text-disabled">Welcome to the world !</p>
-      </div> */}
-      <div>
-        <Form layout="vertical">
-
-          <FormItem
-            label="Prénom"
-          >
-            <Input
-              size="large"
-              placeholder="John"
-              onChange={e => setFirstName(e.target.value)}
-              value={firstname}
-            />
-          </FormItem>
-
-          <FormItem
-            label="Nom"
-          >
-            <Input
-              size="large"
-              placeholder="Doe"
-              onChange={e => setLastName(e.target.value)}
-              value={lastname}
-            />
-          </FormItem>
-
-          <FormItem
-            label="Société"
-          >
-            <Input
-              size="large"
-              placeholder="Facebook"
-              onChange={e => setCompany(e.target.value)}
-              value={company}
-            />
-          </FormItem>
-
-          <FormItem
-            label="Liste du contact"
-          >
-            <Select
-              size="large"
-              defaultValue="Sélectionne-en une"
-              style={{ width: 192 }}
-              onChange={onSelect}
+            <FormItem
+              label="Email"
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: "Your email is required"
+                },
+                {
+                  type: "email",
+                  message: "Please enter a valid email"
+                }]}
             >
-              <Option value="CEO">CEO</Option>
-              <Option value="CTO">CTO</Option>
-            </Select>
-          </FormItem>
+              <Input
+                size="large"
+                allowClear
+              />
+            </FormItem>
 
-          <FormItem
-            style={{ marginTop: 48 }}
-          >
-            <Button
-              size="large"
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              onClick={onSaveClick}
+            <FormItem
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "Your password is required"
+                }
+              ]}
             >
-              Enregistrer
-            </Button>
-          </FormItem>
-        </Form>
+              <Input.Password
+                size="large"
+              />
+            </FormItem>
+
+            <FormItem
+              style={{ marginTop: 48 }}
+            >
+              <Button
+                size="large"
+                type="primary"
+                htmlType="submit"
+                icon={<LoginOutlined />}
+                loading={loading}
+              >
+                Login
+              </Button>
+            </FormItem>
+          </Form>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 };
 
-export async function getServerSideProps() {
-  await DbConnect();
-  const aggregation = leadsModel.aggregate();
-  aggregation.group({ _id: "$list" });
-  const lists = await aggregation.exec();
-
-  return {
-    props: { lists }
+const styles = {
+  content: {
+    height: '100vh',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  title: {
+    marginBottom: 50
   }
-}
+};

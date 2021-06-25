@@ -10,7 +10,9 @@ import {
     UserAddOutlined,
     CheckCircleOutlined,
     SendOutlined,
-    PlusOutlined
+    PlusOutlined,
+    SettingOutlined,
+    LogoutOutlined
 } from '@ant-design/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
@@ -98,9 +100,23 @@ export default function TopMenu() {
                     </Menu.Item>
                 </Menu.ItemGroup> */}
             </SubMenu>
-            <Menu.Item key="account" icon={<UserOutlined />}>
-                <Link href="/account">Account</Link>
-            </Menu.Item>
+            <SubMenu key="account" icon={<UserOutlined />} title="Account">
+                <Menu.Item key="account:setting" icon={<SettingOutlined />}>
+                    <Link href="/account">Settings</Link>
+                </Menu.Item>
+                <Menu.Item key="account:logout">
+                    <Button
+                        icon={<LogoutOutlined />}
+                        style={{ width: '100%' }}
+                        onClick={() => {
+                            localStorage.removeItem('admin');
+                            router.push("/")
+                        }}
+                    >
+                        logout
+                    </Button>
+                </Menu.Item>
+            </SubMenu>
         </Menu>
     )
 }
