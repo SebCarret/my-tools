@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import TopMenu from '../components/TopMenu';
 import Upload from '../components/UploadFile';
-import styles from '../styles/email-finder.module.css';
+import styles from '../styles/create-list.module.css';
 
 const { CheckableTag } = Tag;
 
@@ -71,9 +71,9 @@ export default function createList() {
                 const response = await request.json()
                 if (response.success) leadsSaved++
             }
+            message.success(`${leadsSaved} new contacts saved on your new ${listName} list !`)
         };
         setLoading(false);
-        message.success(`${leadsSaved} new contacts saved on your new ${listName} list !`)
     }
 
     return (
@@ -83,7 +83,7 @@ export default function createList() {
                 <h2>Create a new list</h2>
                 <p>Give it a name, upload a CSV file and select columns you want to save in your list.</p>
             </div>
-            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div id={styles.form}>
                 <Input placeholder="Your list name" onChange={e => setListName(e.target.value)}/>
                 <div id={styles.listUploadContainer}>
                     <div className={styles.listDetails}>
@@ -92,21 +92,20 @@ export default function createList() {
                     <div className={styles.listDetails}>
                         <p>To work with our tools, your file must respect the following rules :</p>
                         <ol>
-                            <li style={{marginBottom: 5}}>Each column name is <span style={{ fontWeight: 'bold' }}>case sensitive</span> (respect syntax below).</li>
-                            <li style={{marginBottom: 5}}><span style={{ fontWeight: 'bold' }}>Required columns</span>: "firstname", "lastname" and "company name".</li>
-                            <li style={{marginBottom: 5}}><span style={{ fontWeight: 'bold' }}>Optional columns</span>: "email", "domain" (company website) and "linkedinUrl" (LinkedIn profile).</li>
+                            <li className={styles.listRules}>Each column name is <span className={styles.boldText}>case sensitive</span> (respect syntax below).</li>
+                            <li className={styles.listRules}><span className={styles.boldText}>Required columns</span>: "firstname", "lastname" and "company name".</li>
+                            <li className={styles.listRules}><span className={styles.boldText}>Optional columns</span>: "email", "domain" (company website) and "linkedinUrl" (LinkedIn profile).</li>
                         </ol>
                     </div>
                 </div>
                 {
                     tempColumns.length === 0
                         ? null
-                        : <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                            <p style={{fontWeight: 'bold'}}>Your files contains {datasToRead.length} contacts. Please select columns you want to save into your list :</p>
-                            <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', padding: 10}}>
+                        : <div id={styles.tagsContainer}>
+                            <p className={styles.boldText}>Your files contains {datasToRead.length} contacts. Please select columns you want to save into your list :</p>
+                            <div id={styles.tagsList}>
                                 {tagsList}
                             </div>
-
                         </div>
                 }
                 <Button
