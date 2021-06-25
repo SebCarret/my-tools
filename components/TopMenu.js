@@ -13,11 +13,14 @@ import {
     PlusOutlined
 } from '@ant-design/icons';
 import Link from 'next/link';
+import { useRouter } from 'next/router'
 import { useSelector } from 'react-redux';
 
 const { SubMenu } = Menu;
 
 export default function TopMenu() {
+
+    const router = useRouter();
 
     const [current, setCurrent] = useState('list');
     const lists = useSelector(state => state.lists);
@@ -37,11 +40,13 @@ export default function TopMenu() {
                     })
                 }
                 <Menu.Item key="list:create">
-                    <Link href="/create-list">
-                        <Button icon={<PlusOutlined />} style={{ width: '100%' }}>
-                            Create list
-                        </Button>
-                    </Link>
+                    <Button
+                        icon={<PlusOutlined />}
+                        style={{ width: '100%' }}
+                        onClick={() => router.push("/create-list")}
+                    >
+                        Create list
+                    </Button>
                 </Menu.Item>
             </SubMenu>
             <SubMenu key="mail" icon={<MailOutlined />} title="Email finder">
