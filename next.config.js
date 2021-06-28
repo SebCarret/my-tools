@@ -1,5 +1,14 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
+const withLess = require("next-with-less");
 
-module.exports = withBundleAnalyzer()
+module.exports = withLess({
+  lessLoaderOptions: {
+    lessOptions: {
+      modifyVars: {
+        "primary-color": "#231F20",
+        "text-color": "#666666",
+        "font-family": "Poppins"
+      },
+      javascriptEnabled: true
+    },
+  },
+});

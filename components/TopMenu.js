@@ -123,8 +123,9 @@ export default function TopMenu() {
 
 const styles = {
     menu: {
+        display: 'flex',
+        justifyContent: 'center',
         width: '100%',
-        marginBottom: 25,
-        textAlign: 'center'
+        marginBottom: 25
     }
 }

@@ -1,6 +1,5 @@
-import 'antd/dist/antd.css'
-import '../styles/vars.css'
 import '../styles/global.css'
+import 'antd/dist/antd.less'
 import { Provider } from 'react-redux'
 import { createStore, combineReducers } from 'redux'
 import lists from '../reducers/list'
