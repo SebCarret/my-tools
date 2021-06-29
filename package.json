@@ -1,12 +1,10 @@
 {
   "name": "test-next",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
@@ -23,8 +21,8 @@
     "redux": "^4.1.0",
     "sync-request": "^6.1.0"
   },
-  "devDependencies": {
-    "eslint": "7.29.0",
-    "eslint-config-next": "11.0.1"
+  "browser": {
+    "fs": false,
+    "path": false
   }
 }
