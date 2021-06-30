@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Menu, Button } from 'antd';
 import {
     UnorderedListOutlined,
@@ -7,7 +6,6 @@ import {
     SearchOutlined,
     UploadOutlined,
     UserOutlined,
-    UserAddOutlined,
     CheckCircleOutlined,
     SendOutlined,
     PlusOutlined,
@@ -16,21 +14,22 @@ import {
 } from '@ant-design/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 const { SubMenu } = Menu;
 
 export default function TopMenu() {
 
     const router = useRouter();
-
-    const [current, setCurrent] = useState('list');
     const lists = useSelector(state => state.lists);
+    const menuSelected = useSelector(state => state.menu);
+    const dispatch = useDispatch();
+    
 
-    const menuSelect = e => setCurrent(e.key)
+    const menuSelect = e => dispatch({type: 'selectMenu', menu: e.key});
 
     return (
-        <Menu style={styles.menu} onClick={menuSelect} selectedKeys={current} mode="horizontal">
+        <Menu style={styles.menu} onClick={menuSelect} selectedKeys={[menuSelected]} mode="horizontal">
             <SubMenu key="list" icon={<UnorderedListOutlined />} title="Your lists">
                 {
                     lists.map(list => {
