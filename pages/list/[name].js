@@ -218,7 +218,7 @@ const List = ({ list }) => {
             <TopMenu />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: 25 }}>
-                    <h2 style={{ marginBottom: 0, marginRight: 10 }}>Selected list : {name}</h2>
+                    <h2 style={{ marginBottom: 0, marginRight: 10, color: "#4C5F6B" }}>Selected list : {name}</h2>
                     <CSVDownloader
                         data={datas}
                         // type="button"
@@ -271,7 +271,7 @@ const List = ({ list }) => {
                         }
                     </Button>
                 </div>
-                <Table rowSelection={rowSelection} columns={columns} dataSource={datas} />
+                <Table rowSelection={rowSelection} columns={columns} dataSource={datas} bordered />
             </div>
             <EditModal isModalVisible={isEditVisible} showModal={handleEditModal} contact={contactToEdit} confirmUpdating={confirmUpdating} />
             <CreateModal isModalVisible={isCreateVisible} showModal={handleCreateModal} listName={name} addContact={addContact} lists={lists} />

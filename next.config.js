@@ -4,9 +4,11 @@ module.exports = withLess({
   lessLoaderOptions: {
     lessOptions: {
       modifyVars: {
-        "primary-color": "#231F20",
-        "text-color": "#666666",
-        "font-family": "Poppins"
+        "primary-color": "#23B5D3",
+        "success-color": "#0CCA4A",
+        "error-color": "#DB2B39",
+        "text-color": "#4C5F6B",
+        "font-family": "Montserrat"
       },
       javascriptEnabled: true
     },
