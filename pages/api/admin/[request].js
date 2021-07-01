@@ -47,9 +47,16 @@ export default async function adminRequest(req, res) {
                 res.status(400).json({ success: false, error })
             }
             break;
-        case 'logout':
+        case 'update':
             try {
-                res.status(200).json({ success: true,  message: 'Redirection to login OK'})
+                if (req.body.password) req.body.password = bcrypt.hashSync(req.body.password, 10);
+                const adminToUpdate = await adminModel.updateOne({ _id: req.body._id }, req.body);
+                if (adminToUpdate.ok === 1){
+                    const adminUpdated = await adminModel.findById(req.body._id);
+                    res.status(200).json({ success: true, message: 'infos updated !', admin: adminUpdated })
+                } else {
+                    res.status(200).json({ success: false, error: "Update failed... Please try again" })
+                }
             } catch (error) {
                 res.status(400).json({ success: false, error })
             }

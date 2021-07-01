@@ -22,6 +22,7 @@ export default function TopMenu() {
 
     const router = useRouter();
     const lists = useSelector(state => state.lists);
+    const admin = useSelector(state => state.admin);
     const menuSelected = useSelector(state => state.menu);
     const dispatch = useDispatch();
     
@@ -101,7 +102,7 @@ export default function TopMenu() {
             </SubMenu>
             <SubMenu key="account" icon={<UserOutlined />} title="Account">
                 <Menu.Item key="account:setting" icon={<SettingOutlined />}>
-                    <Link href="/account">Settings</Link>
+                    <Link href={`/account/${admin._id}`}>Settings</Link>
                 </Menu.Item>
                 <Menu.Item key="account:logout">
                     <Button

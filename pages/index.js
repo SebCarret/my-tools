@@ -33,11 +33,7 @@ export default function Login() {
     });
     let response = await request.json();
     if (response.success) {
-      const adminDatas = {
-        id: response.admin._id,
-        firstname: response.admin.firstname
-      };
-      localStorage.setItem('admin', JSON.stringify(adminDatas));
+      localStorage.setItem('admin', JSON.stringify(response.admin));
       router.push('/home')
     } else {
       message.error(response.error)
