@@ -3,7 +3,7 @@ import request from 'sync-request';
 const emailVerify = async (req, res) => {
 
     try {
-        const hunterRequest = await request('GET', `https://api.hunter.io/v2/email-verifier?email=${req.query.email}&api_key=${process.env.HUNTER_APIKEY}`);
+        const hunterRequest = await request('GET', `https://api.hunter.io/v2/email-verifier?email=${req.query.email}&api_key=${req.query.apiKey}`);
         const hunterResponse = await JSON.parse(hunterRequest.getBody());
         let emailStatus;
 

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 const Option = Select.Option;
 
-export default function SingleEmailSearch({ credits, minusCredits }) {
+export default function SingleEmailSearch({ credits, minusCredits, hunterApiKey }) {
 
     const [type, setType] = useState('');
     const [loading, setLoading] = useState(false);
@@ -26,7 +26,8 @@ export default function SingleEmailSearch({ credits, minusCredits }) {
         setLoading(true);
         let datas = {
             firstname: values.firstname,
-            lastname: values.lastname
+            lastname: values.lastname,
+            apiKey: hunterApiKey
         };
         datas[values.type] = values.value;
         let request = await fetch('/api/email-finder', {

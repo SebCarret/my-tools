@@ -4,7 +4,7 @@ import { MailOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-export default function sendSingleEmail() {
+export default function sendSingleEmail({email, emailjsId}) {
 
     const [loading, setLoading] = useState(false);
 
@@ -18,10 +18,10 @@ export default function sendSingleEmail() {
             firstname: values.firstname,
             company: values.company,
             email: values.email,
-            reply_to: process.env.NEXT_PUBLIC_EMAIL_SENDER
+            reply_to: email
         };
         const emailjs = (await import('emailjs-com')).default;
-        emailjs.send('ovh', values.template, template_params, process.env.NEXT_PUBLIC_EMAILJS_ID)
+        emailjs.send('ovh', values.template, template_params, emailjsId)
             .then(function (response) {
                 if (response.status === 200) {
                     message.success('Email successfully sent !')

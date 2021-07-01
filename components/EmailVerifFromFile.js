@@ -7,7 +7,7 @@ import EmailVerifModal from './EmailVerifModal';
 
 const { CheckableTag } = Tag;
 
-export default function EMailFinderFromFile({ credits, minusCredits }) {
+export default function EMailFinderFromFile({ credits, minusCredits, hunterApiKey }) {
 
     const [tempColumns, setTempColumns] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -65,7 +65,7 @@ export default function EMailFinderFromFile({ credits, minusCredits }) {
         for (let row of selectedRows){
             let leadToVerif = datasCopy.find(e => e.key === row);
             if (leadToVerif){
-                let request = await fetch(`/api/verify-email?email=${leadToVerif.email}`);
+                let request = await fetch(`/api/verify-email?email=${leadToVerif.email}&apiKey=${hunterApiKey}`);
                 let response = await request.json();
                 if (response.success){
                     emailsVerified++;

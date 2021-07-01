@@ -27,7 +27,9 @@ export default function Account({ admin }) {
     const dispatch = useDispatch();
 
     const saveChanges = async () => {
+
         setLoading(true);
+        
         let datas = { _id: admin._id };
         if (firstname !== admin.firstname) datas.firstname = firstname;
         if (lastname !== admin.lastname) datas.lastname = lastname;
@@ -36,7 +38,7 @@ export default function Account({ admin }) {
         if (hunterKey !== 'API key not set' || (admin.hunterKey && hunterKey !== admin.hunterKey)) datas.hunterKey = hunterKey;
         if (dropKey !== 'API key not set' || (admin.dropcontactKey && hunterKey !== admin.dropcontactKey)) datas.dropcontactKey = dropKey;
         if (emailjsId !== 'ID not set' || (admin.emailjsId && emailjsId !== admin.emailjsId)) datas.emailjsId = emailjsId;
-        console.log(datas);
+
         if (Object.keys(datas).length === 1){
             message.error("Sorry but you didn't change anything...")
         } else {
@@ -137,7 +139,7 @@ export default function Account({ admin }) {
                 </div>
                 <Divider orientation="left" style={styles.divider}>API keys</Divider>
                 <div style={styles.values}>
-                    <p style={styles.labels}>Hunter :</p>
+                    <p style={styles.labels}>Hunter</p>
                     <Input
                         value={hunterKey}
                         bordered={hunterLocked ? false : true}
@@ -155,7 +157,7 @@ export default function Account({ admin }) {
                     />
                 </div>
                 <div style={styles.values}>
-                    <p style={styles.labels}>Dropcontact :</p>
+                    <p style={styles.labels}>Dropcontact</p>
                     <Input
                         value={dropKey}
                         bordered={dropLocked ? false : true}
@@ -173,7 +175,7 @@ export default function Account({ admin }) {
                     />
                 </div>
                 <div style={styles.values}>
-                    <p style={styles.labels}>EmailJS ID :</p>
+                    <p style={styles.labels}>EmailJS ID</p>
                     <Input
                         value={emailjsId}
                         bordered={emailjsLocked ? false : true}

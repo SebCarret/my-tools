@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
-export default function LinkedinSearchFromList({ credits, minusCredits }) {
+export default function LinkedinSearchFromList({ credits, minusCredits, dropcontactApiKey }) {
 
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
@@ -96,7 +96,8 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
                 let obj = {
                     first_name: leadToFind.firstname,
                     last_name: leadToFind.lastname,
-                    company: leadToFind.company
+                    company: leadToFind.company,
+                    apiKey: dropcontactApiKey
                 };
                 profilesToFind.push(obj);
             }
@@ -122,7 +123,7 @@ export default function LinkedinSearchFromList({ credits, minusCredits }) {
         })
             .then(id => {
                 setTimeout(async () => {
-                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}`);
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}&apiKey=${dropcontactApiKey}`);
                     let getResponse = await getRequest.json();
                     if (getResponse.success) {
                         for (let lead of getResponse.datas) {

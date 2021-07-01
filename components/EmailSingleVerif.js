@@ -5,7 +5,7 @@ import styles from '../styles/email-verif.module.css';
 
 const { Meta } = Card;
 
-export default function EmailSingleVerif({ credits, minusCredits }) {
+export default function EmailSingleVerif({ credits, minusCredits, hunterApiKey }) {
 
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState('');
@@ -14,7 +14,7 @@ export default function EmailSingleVerif({ credits, minusCredits }) {
 
     const verifyEmail = async values => {
         setLoading(true);
-        const request = await fetch(`/api/verify-email?email=${values.email}`);
+        const request = await fetch(`/api/verify-email?email=${values.email}&apiKey=${hunterApiKey}`);
         const response = await request.json();
         if (response.success){
             setStatus(response.status);

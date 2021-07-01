@@ -2,12 +2,12 @@ import request from 'sync-request';
 
 const emailFinder = async (req, res) => {
 
-    const { body: { domain, firstname, lastname, company } } = req;
+    const { body: { domain, firstname, lastname, company, apiKey } } = req;
 
     let url;
     domain === undefined
-        ? url = `https://api.hunter.io/v2/email-finder?company=${company}&first_name=${firstname}&last_name=${lastname}&api_key=${process.env.HUNTER_APIKEY}`
-        : url = `https://api.hunter.io/v2/email-finder?domain=${domain}&first_name=${firstname}&last_name=${lastname}&api_key=${process.env.HUNTER_APIKEY}`
+        ? url = `https://api.hunter.io/v2/email-finder?company=${company}&first_name=${firstname}&last_name=${lastname}&api_key=${apiKey}`
+        : url = `https://api.hunter.io/v2/email-finder?domain=${domain}&first_name=${firstname}&last_name=${lastname}&api_key=${apiKey}`
     try {
         const hunterRequest = await request('GET', url);
         const hunterResponse = await JSON.parse(hunterRequest.getBody());

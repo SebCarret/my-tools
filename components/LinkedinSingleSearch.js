@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 const { Meta } = Card;
 
-export default function LinkedinSingleSearch({ credits, minusCredits }) {
+export default function LinkedinSingleSearch({ credits, minusCredits, dropcontactApiKey }) {
 
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState(null);
@@ -21,7 +21,8 @@ export default function LinkedinSingleSearch({ credits, minusCredits }) {
                 data: [{
                     first_name: values.firstname,
                     last_name: values.lastname,
-                    company: values.company
+                    company: values.company,
+                    apiKey: dropcontactApiKey
                 }],
                 siren: "False",
                 language: 'en'
@@ -41,20 +42,24 @@ export default function LinkedinSingleSearch({ credits, minusCredits }) {
         })
             .then(id => {
                 setTimeout(async () => {
-                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}`);
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}&apiKey=${dropcontactApiKey}`);
                     let getResponse = await getRequest.json();
-                    if (getResponse.datas[0].linkedin) {
-                        values.linkedinUrl = `https://${getResponse.datas[0].linkedin}`;
-                        if (getResponse.datas[0].email) {
-                            values.email = getResponse.datas[0].email[0].email;
-                            values.status = "unverified";
-                        }
-                        if (getResponse.datas[0].website) values.domain = getResponse.datas[0].website;
-                        setUser(values);
-                        form.resetFields()
+                    if (getResponse.success) {
+                        if (getResponse.datas[0].linkedin) {
+                            values.linkedinUrl = `https://${getResponse.datas[0].linkedin}`;
+                            if (getResponse.datas[0].email) {
+                                values.email = getResponse.datas[0].email[0].email;
+                                values.status = "unverified";
+                            }
+                            if (getResponse.datas[0].website) values.domain = getResponse.datas[0].website;
+                            setUser(values);
+                            form.resetFields()
+                        } else {
+                            message.error('Sorry, no profile found for this contact on LinkedIn...')
+                        };
                     } else {
-                        message.error('Sorry, no profile found for this contact on LinkedIn...')
-                    };
+                        message.error(getResponse.error)
+                    }
                     setLoading(false)
                 }, 30000)
 

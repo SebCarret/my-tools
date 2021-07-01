@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
-export default function sendEmailFromList() {
+export default function sendEmailFromList({email, emailjsId}) {
 
     const [loading, setLoading] = useState(false);
     const [columns, setColumns] = useState([]);
@@ -102,10 +102,10 @@ export default function sendEmailFromList() {
                     firstname: receiver.firstname,
                     company: receiver.company,
                     email: receiver.email,
-                    reply_to: process.env.NEXT_PUBLIC_EMAIL_SENDER
+                    reply_to: email
                 };
                 setTimeout(() => {
-                    emailjs.send('ovh', template, template_params, process.env.NEXT_PUBLIC_EMAILJS_ID)
+                    emailjs.send('ovh', template, template_params, emailjsId)
                         .then(response => console.log(response), error => console.log('FAILED...', error))
                 }, 1000)
             }

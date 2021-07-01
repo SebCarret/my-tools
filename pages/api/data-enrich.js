@@ -12,7 +12,7 @@ export default async function getInfos(req, res) {
                 let firstRequest = await request('POST', 'https://api.dropcontact.io/batch', {
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Access-Token': process.env.DROPCONTACT_APIKEY
+                        'X-Access-Token': req.body.data[0].apiKey
                     },
                     body: datas
                 });
@@ -29,7 +29,7 @@ export default async function getInfos(req, res) {
             try {
                 let getRequest = await request('GET', `https://api.dropcontact.io/batch/${req.query.requestId}`, {
                     headers: {
-                        'X-Access-Token': process.env.DROPCONTACT_APIKEY
+                        'X-Access-Token': req.query.apiKey
                     }
                 });
                 let getResponse = await JSON.parse(getRequest.getBody());
@@ -40,6 +40,5 @@ export default async function getInfos(req, res) {
             } catch (error) {
                 res.status(400).json({ success: false, error })
             }
-
     }
 }

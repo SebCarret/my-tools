@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 const { CheckableTag } = Tag;
 
-export default function LinkedinSearchFromFile({ credits, minusCredits }) {
+export default function LinkedinSearchFromFile({ credits, minusCredits, dropcontactApiKey }) {
 
     const [tempColumns, setTempColumns] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -61,7 +61,8 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
                 let obj = {
                     first_name: leadToFind.firstname,
                     last_name: leadToFind.lastname,
-                    company: leadToFind.company
+                    company: leadToFind.company,
+                    apiKey: dropcontactApiKey
                 };
                 profilesToFind.push(obj);
             }
@@ -87,9 +88,9 @@ export default function LinkedinSearchFromFile({ credits, minusCredits }) {
         })
             .then(id => {
                 setTimeout(async () => {
-                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}`);
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}&apiKey=${dropcontactApiKey}`);
                     let getResponse = await getRequest.json();
-                    if (getResponse.success) {
+                    if (getResponse.success) {  
                         for (let lead of getResponse.datas) {
                             let leadToEnrich = datasCopy.find(e => e.lastname === lead.last_name);
                             if (leadToEnrich && lead.linkedin) {

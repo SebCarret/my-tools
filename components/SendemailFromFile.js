@@ -7,7 +7,7 @@ import UploadFile from './UploadFile';
 const { CheckableTag } = Tag;
 const { Option } = Select;
 
-export default function sendEmailFromFile() {
+export default function sendEmailFromFile({email, emailjsId}) {
 
     const [tempColumns, setTempColumns] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -84,10 +84,10 @@ export default function sendEmailFromFile() {
                     firstname: receiver.firstname,
                     company: receiver.company,
                     email: receiver.email,
-                    reply_to: process.env.NEXT_PUBLIC_EMAIL_SENDER
+                    reply_to: email
                 };
                 setTimeout(() => {
-                    emailjs.send('ovh', template, template_params, process.env.NEXT_PUBLIC_EMAILJS_ID)
+                    emailjs.send('ovh', template, template_params, emailjsId)
                         .then(response => console.log(response), error => console.log('FAILED...', error))
                 }, 1000)
             }

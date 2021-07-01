@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
-export default function EmailVerifFromList({ credits, minusCredits }) {
+export default function EmailVerifFromList({ credits, minusCredits, hunterApiKey }) {
 
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
@@ -18,7 +18,7 @@ export default function EmailVerifFromList({ credits, minusCredits }) {
 
     const handleSelection = async value => {
         setLoading(true);
-        let request = await fetch(`/api/list/load?list=${value}`);
+        let request = await fetch(`/api/list/load?list=${value}&apiKey=${hunterApiKey}`);
         let response = await request.json();
         if (response.success) {
             const headers = ["firstname", "lastname", "company", "domain", "email", "status", "linkedinUrl"]

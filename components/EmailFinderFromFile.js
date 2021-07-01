@@ -7,7 +7,7 @@ import EmailFinderModal from './EmailFinderModal';
 
 const { CheckableTag } = Tag;
 
-export default function EMailFinderFromFile({ credits, minusCredits }) {
+export default function EMailFinderFromFile({ credits, minusCredits, hunterApiKey }) {
 
     const [tempColumns, setTempColumns] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -60,6 +60,7 @@ export default function EMailFinderFromFile({ credits, minusCredits }) {
                 let obj = {
                     firstname: leadToFind.firstname,
                     lastname: leadToFind.lastname,
+                    apiKey: hunterApiKey
                 };
                 leadToFind.domain ? obj.domain = leadToFind.domain : obj.company = leadToFind.company;
                 let request = await fetch('/api/email-finder', {

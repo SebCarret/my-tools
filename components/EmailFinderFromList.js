@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
-export default function EmailFinderFromList({ credits, minusCredits }) {
+export default function EmailFinderFromList({ credits, minusCredits, hunterApiKey }) {
 
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
@@ -95,6 +95,7 @@ export default function EmailFinderFromList({ credits, minusCredits }) {
                 let obj = {
                     firstname: leadToFind.firstname,
                     lastname: leadToFind.lastname,
+                    apiKey: hunterApiKey
                 };
                 leadToFind.domain ? obj.domain = leadToFind.domain : obj.company = leadToFind.company;
                 let request = await fetch('/api/email-finder', {
