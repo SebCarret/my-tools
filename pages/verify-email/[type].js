@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge, Tooltip } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
@@ -10,13 +10,24 @@ import FileVerif from '../../components/EmailVerifFromFile';
 import ListVerif from '../../components/EmailVerifFromList';
 import NoApiKeys from '../../components/NoApiKeys';
 
-export default function Upload({ credits }) {
+export default function Upload() {
 
-    const [verificationCredits, setVerificationCredits] = useState(credits.verifications);
+    const [verificationCredits, setVerificationCredits] = useState(0);
+    const [date, setDate] = useState('');
 
     const router = useRouter();
     const { type } = router.query;
     const admin = useSelector(state => state.admin);
+
+    useEffect(() => {
+        const loadCredits = async () => {
+            let request = await fetch(`/api/credits/verify-email?apiKey=${admin.hunterKey}`);
+            let response = await request.json();
+            setVerificationCredits(response.credits);
+            setDate(response.date);
+        };
+        loadCredits()
+    }, []);
 
     const handleVerifCredits = creditsAvailables => {
         if (verificationCredits > 0) {
@@ -56,7 +67,7 @@ export default function Upload({ credits }) {
                     <div id={styles.titleContainer}>
                         <h2 id={styles.title}>{title}</h2>
                         <Badge count={verificationCredits}>
-                            <Tooltip title={`Credits availables until ${credits.date}`}>
+                            <Tooltip title={`Credits availables until ${date}`}>
                                 <CheckCircleOutlined id={styles.verifPicto} />
                             </Tooltip>
                         </Badge>
@@ -68,18 +79,3 @@ export default function Upload({ credits }) {
         )
     }
 };
-
-export async function getServerSideProps() {
-
-    let request = await fetch(`https://api.hunter.io/v2/account?api_key=${process.env.HUNTER_APIKEY}`);
-    let response = await request.json();
-
-    return {
-        props: {
-            credits: {
-                date: response.data.reset_date,
-                verifications: response.data.requests.verifications.available - response.data.requests.verifications.used,
-            }
-        }
-    }
-}

@@ -6,7 +6,7 @@ import lists from '../reducers/list'
 import admin from '../reducers/admin'
 import menu from '../reducers/menu'
 
-const store = createStore(combineReducers({lists, admin, menu}))
+const store = createStore(combineReducers({ lists, admin, menu }))
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -14,4 +14,4 @@ export default function MyApp({ Component, pageProps }) {
       <Component {...pageProps} />
     </Provider>
   )
-}
+};

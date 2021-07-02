@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import styles from '../../../styles/linkedin-tools.search.module.css';
@@ -10,13 +10,22 @@ import LinkedinSearchFromList from '../../../components/LinkedinSearchFromList';
 import LinkedinSearchFromFile from '../../../components/LinkedinSearchFromFile';
 import NoApiKeys from '../../../components/NoApiKeys';
 
-export default function LinkedinSearchProfile({ credits }) {
+export default function LinkedinSearchProfile() {
 
-    const [creditsLeft, setCreditsLeft] = useState(credits);
+    const [creditsLeft, setCreditsLeft] = useState(0);
 
     const router = useRouter();
     const { type } = router.query;
     const admin = useSelector(state => state.admin);
+
+    useEffect(() => {
+        const loadCredits = async () => {
+            let request = await fetch(`/api/credits/linkedin-profile?apiKey=${admin.dropcontactKey}`);
+            let response = await request.json();
+            setCreditsLeft(response.credits);
+        };
+        loadCredits()
+    }, []);
 
     const handleCredits = creditsAvailables => {
         if (creditsLeft > 0) {
@@ -68,25 +77,3 @@ export default function LinkedinSearchProfile({ credits }) {
         )
     }
 };
-
-export async function getServerSideProps() {
-
-    let request = await fetch('https://api.dropcontact.io/batch', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Access-Token': process.env.DROPCONTACT_APIKEY
-        },
-        body: JSON.stringify({
-            data: [{}]
-        })
-    });
-    let response = await request.json();
-
-    return {
-        props: {
-            credits: response.credits_left
-        }
-    }
-
-}

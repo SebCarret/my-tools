@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
@@ -10,13 +10,24 @@ import SearchFromFile from '../../components/EmailFinderFromFile';
 import SearchFromList from '../../components/EmailFinderFromList';
 import NoApiKeys from '../../components/NoApiKeys';
 
-export default function Upload({ credits }) {
+export default function emailFinder() {
 
-    const [findCredits, setFindCredits] = useState(credits.searches);
+    const [findCredits, setFindCredits] = useState(0);
+    const [date, setDate] = useState('');
 
     const router = useRouter();
     const { type } = router.query;
     const admin = useSelector(state => state.admin);
+
+    useEffect(() => {
+        const loadCredits = async () => {
+            let request = await fetch(`/api/credits/email-finder?apiKey=${admin.hunterKey}`);
+            let response = await request.json();
+            setFindCredits(response.credits);
+            setDate(response.date);
+        };
+        loadCredits()
+    }, []);
 
     const handleFindCredits = creditsAvailables => {
         if (findCredits > 0) {
@@ -56,7 +67,7 @@ export default function Upload({ credits }) {
                     <div id={styles.titleContainer}>
                         <h2 id={styles.title}>{title}</h2>
                         <Badge count={findCredits}>
-                            <Tooltip title={`Credits availables until ${credits.date}`}>
+                            <Tooltip title={`Credits availables until ${date}`}>
                                 <SearchOutlined id={styles.searchPicto} />
                             </Tooltip>
                         </Badge>
@@ -68,18 +79,3 @@ export default function Upload({ credits }) {
         )
     }
 };
-
-export async function getServerSideProps() {
-
-    let request = await fetch(`https://api.hunter.io/v2/account?api_key=${process.env.HUNTER_APIKEY}`);
-    let response = await request.json();
-
-    return {
-        props: {
-            credits: {
-                date: response.data.reset_date,
-                searches: response.data.requests.searches.available - response.data.requests.searches.used
-            }
-        }
-    }
-}
