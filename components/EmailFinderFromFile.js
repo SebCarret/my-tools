@@ -7,7 +7,7 @@ import EmailFinderModal from './EmailFinderModal';
 
 const { CheckableTag } = Tag;
 
-export default function EMailFinderFromFile({ credits, minusCredits, hunterApiKey }) {
+export default function EMailFinderFromFile({ credits, minusCredits, apiSelected, hunterApiKey, dropcontactApiKey }) {
 
     const [tempColumns, setTempColumns] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -50,7 +50,7 @@ export default function EMailFinderFromFile({ credits, minusCredits, hunterApiKe
         setSelectedRows(selectedRowKeys)
     };
 
-    const onFindEmailClick = async () => {
+    const findEmailWithHunter = async () => {
         setIsLoading(true);
         let datasCopy = [...datasToRead];
         let emailsToFind = [];
@@ -90,6 +90,78 @@ export default function EMailFinderFromFile({ credits, minusCredits, hunterApiKe
         }
     };
 
+    const findEmailWithDropcontact = () => {
+        console.log(`API selected : ${apiSelected}, API key : ${dropcontactApiKey}`);
+        let datasCopy = [...datasToRead];
+        setIsLoading(true);
+        let emailsFound = 0;
+        let emailsToFind = [];
+        for (let row of selectedRows) {
+            let leadToFind = datasCopy.find(contact => contact.key === row);
+            if (leadToFind) {
+                let obj = {
+                    first_name: leadToFind.firstname,
+                    last_name: leadToFind.lastname,
+                    company: leadToFind.company,
+                    apiKey: dropcontactApiKey
+                };
+                if (leadToFind.domain) obj.website = leadToFind.domain;
+                emailsToFind.push(obj);
+            }
+        };
+        new Promise(async (resolve, reject) => {
+            let datasToFetch = JSON.stringify({
+                data: emailsToFind,
+                siren: "False",
+                language: 'en'
+            });
+            let request = await fetch('/api/data-enrich', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/Json' },
+                body: datasToFetch
+            })
+            let response = await request.json();
+            if (response.success) {
+                minusCredits(response.credits);
+                resolve(response.requestId)
+            } else {
+                message.error(response.error)
+            }
+        })
+            .then(id => {
+                setTimeout(async () => {
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}&apiKey=${dropcontactApiKey}`);
+                    let getResponse = await getRequest.json();
+                    if (getResponse.success) {
+                        let emailsToDisplay = [];
+                        for (let lead of getResponse.datas) {
+                            let leadToEnrich = datasCopy.find(e => e.lastname === lead.last_name);
+                            if (leadToEnrich && lead.email) {
+                                emailsFound++;
+                                leadToEnrich.email = lead.email[0].email;
+                                leadToEnrich.status = "unverified";
+                                if (lead.linkedin) {
+                                    leadToEnrich.linkedinUrl = `https://${lead.linkedin}`;
+                                }
+                                if (lead.website) leadToEnrich.domain = lead.website;
+                                emailsToDisplay.push(leadToEnrich)
+                            }
+                        };
+                        setSelectedLeads(emailsToDisplay);
+                        setSelectedRows([])
+                        if (emailsFound === 0) {
+                            message.error('No email found for these contacts sorry...')
+                        } else {
+                            setIsVisible(true)
+                        }
+                    } else {
+                        message.error(getResponse.error)
+                    };
+                    setIsLoading(false);
+                }, 35000)
+            })
+    };
+
     const showModal = visible => setIsVisible(visible);
 
     const rowSelection = {
@@ -118,8 +190,8 @@ export default function EMailFinderFromFile({ credits, minusCredits, hunterApiKe
                 <div id={styles.uploadContent}>
                     {
                         tempColumns.length === 0
-                        ? <p id={styles.uploadText}>Upload a file and select required columns.</p>
-                        : tagsList
+                            ? <p id={styles.uploadText}>Upload a file and select required columns.</p>
+                            : tagsList
                     }
                 </div>
             </div>
@@ -133,9 +205,9 @@ export default function EMailFinderFromFile({ credits, minusCredits, hunterApiKe
                             disabled={selectedRows.length < 1 ? true : false}
                             loading={isLoading}
                             style={antStyles.emailButton}
-                            onClick={onFindEmailClick}
+                            onClick={apiSelected === "Hunter" ? findEmailWithHunter : findEmailWithDropcontact}
                         >
-                            Search email
+                            {isLoading ? "Processing..." : "Search email"}
                         </Button>
                         <Table
                             rowSelection={rowSelection}

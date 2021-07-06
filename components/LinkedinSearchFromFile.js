@@ -128,7 +128,7 @@ export default function LinkedinSearchFromFile({ credits, minusCredits, dropcont
                         message.error(getResponse.error)
                     };
                     setIsLoading(false);
-                }, 30000)
+                }, 35000)
             })
     };
 

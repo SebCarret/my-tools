@@ -18,7 +18,7 @@ export default function EmailVerifFromList({ credits, minusCredits, hunterApiKey
 
     const handleSelection = async value => {
         setLoading(true);
-        let request = await fetch(`/api/list/load?list=${value}&apiKey=${hunterApiKey}`);
+        let request = await fetch(`/api/list/load?list=${value}`);
         let response = await request.json();
         if (response.success) {
             const headers = ["firstname", "lastname", "company", "domain", "email", "status", "linkedinUrl"]
@@ -92,7 +92,7 @@ export default function EmailVerifFromList({ credits, minusCredits, hunterApiKey
         for (let row of selectedRows) {
             let leadToFind = datasCopy.find(contact => contact.key === row);
             if (leadToFind) {
-                let request = await fetch(`/api/verify-email?email=${leadToFind.email}`);
+                let request = await fetch(`/api/verify-email?email=${leadToFind.email}&apiKey=${hunterApiKey}`);
                 let response = await request.json();
                 if (response.success) {
                     emailsVerified++;

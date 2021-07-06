@@ -77,7 +77,7 @@ export default function EmailFinderModal({ isModalVisible, leads, showModal }) {
                             ]}
                         >
                             <List.Item.Meta
-                                avatar={<Avatar style={avatarStyle}>{item.score}</Avatar>}
+                                avatar={<Avatar style={avatarStyle}>{`${item.firstname.charAt(0).toUpperCase()}${item.lastname.charAt(0).toUpperCase()}`}</Avatar>}
                                 title={`${item.firstname} ${item.lastname}`}
                                 description={item.email}
                             />

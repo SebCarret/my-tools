@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
-export default function EmailFinderFromList({ credits, minusCredits, hunterApiKey }) {
+export default function EmailFinderFromList({ credits, minusCredits, apiSelected, hunterApiKey, dropcontactApiKey }) {
 
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
@@ -85,7 +85,7 @@ export default function EmailFinderFromList({ credits, minusCredits, hunterApiKe
         setLoading(false)
     };
 
-    const onFindEmailClick = async () => {
+    const findEmailWithHunter = async () => {
         setIsLoading(true);
         let datasCopy = [...datas];
         let emailsFound = 0;
@@ -134,6 +134,80 @@ export default function EmailFinderFromList({ credits, minusCredits, hunterApiKe
         }
     };
 
+    const findEmailWithDropcontact = () => {
+        let datasCopy = [...datas];
+        setIsLoading(true);
+        let emailsFound = 0;
+        let emailsToFind = [];
+        for (let row of selectedRows) {
+            let leadToFind = datasCopy.find(contact => contact.key === row);
+            if (leadToFind) {
+                let obj = {
+                    first_name: leadToFind.firstname,
+                    last_name: leadToFind.lastname,
+                    company: leadToFind.company,
+                    apiKey: dropcontactApiKey
+                };
+                if (leadToFind.domain) obj.domain = leadToFind.domain;
+                emailsToFind.push(obj);
+            }
+        };
+        new Promise(async (resolve, reject) => {
+            let datasToFetch = JSON.stringify({
+                data: emailsToFind,
+                siren: "False",
+                language: 'en'
+            });
+            let request = await fetch('/api/data-enrich', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/Json' },
+                body: datasToFetch
+            })
+            let response = await request.json();
+            if (response.success) {
+                minusCredits(response.credits);
+                resolve(response.requestId)
+            } else {
+                message.error(response.error)
+            }
+        })
+            .then(id => {
+                setTimeout(async () => {
+                    let getRequest = await fetch(`/api/data-enrich?requestId=${id}&apiKey=${dropcontactApiKey}`);
+                    let getResponse = await getRequest.json();
+                    if (getResponse.success) {
+                        for (let lead of getResponse.datas) {
+                            let leadToEnrich = datasCopy.find(e => e.lastname === lead.last_name);
+                            if (leadToEnrich && lead.email) {
+                                emailsFound++;
+                                leadToEnrich.email = lead.email[0].email;
+                                leadToEnrich.status = "unverified";
+                                if (lead.linkedin) leadToEnrich.linkedinUrl = `https://${lead.linkedin}`;
+                                if (lead.website) leadToEnrich.domain = lead.website;
+                                const index = datasCopy.indexOf(leadToEnrich);
+                                datasCopy[index] = leadToEnrich;
+                                let updateRequest = await fetch('/api/leads', {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/Json' },
+                                    body: JSON.stringify(leadToEnrich)
+                                });
+                            }
+                        };
+                        setDatas(datasCopy);
+                        setSelectedRows([])
+                        if (emailsFound === 0) {
+                            message.error('No LinkedIn profiles found for these contacts sorry...')
+                        } else {
+                            message.success(`We found ${emailsFound} emails with ${apiSelected} API !`)
+                        }
+                    } else {
+                        message.error(getResponse.error)
+                    };
+                    setIsLoading(false);
+                }, 35000)
+            })
+    };
+
     const onSelectChange = rows => {
         setSelectedRows(rows)
     };
@@ -162,9 +236,9 @@ export default function EmailFinderFromList({ credits, minusCredits, hunterApiKe
                     icon={<MailOutlined />}
                     disabled={selectedRows.length < 1 ? true : false}
                     loading={isLoading}
-                    onClick={onFindEmailClick}
+                    onClick={apiSelected === 'Hunter' ? findEmailWithHunter : findEmailWithDropcontact}
                 >
-                    Search email
+                    {isLoading ? 'Processing...' : 'Search email'}
                 </Button>
             </div>
 
@@ -179,5 +253,5 @@ export default function EmailFinderFromList({ credits, minusCredits, hunterApiKe
 
 const antStyles = {
     select: { width: 200, marginRight: 5 },
-    icon: {fontSize: 20, color: "#676767"}
+    icon: { fontSize: 20, color: "#676767" }
 };

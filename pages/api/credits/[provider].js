@@ -24,7 +24,7 @@ const getCredits = async (req, res) => {
                 res.status(400).json({ success: false, error })
             }
             break;
-        case 'linkedin-profile':
+        case 'enrich-data':
             try {
                 const dropRequest = await request('POST', 'https://api.dropcontact.io/batch', {
                     headers: {

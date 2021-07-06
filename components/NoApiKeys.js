@@ -25,7 +25,7 @@ export default function noApiKeys({ adminId, tool, provider }) {
                 <div id={styles.titleContainer}>
                     <h2 id={styles.title}>Sorry, something's missing...</h2>
                 </div>
-                <p>To use our {tool} tool, you need to <strong>set an API key in your settings</strong>, provided by your {provider} account.</p>
+                <p>To use our {tool} tool with {provider}, you need to <strong>set an API key in your settings</strong>.</p>
                 <p>Please read <a href={url} target="_blank">the {provider} documentation</a> to get it.</p>
             </div>
             <Link href={`/account/${adminId}`}>

@@ -61,7 +61,7 @@ export default function LinkedinSingleSearch({ credits, minusCredits, dropcontac
                         message.error(getResponse.error)
                     }
                     setLoading(false)
-                }, 30000)
+                }, 35000)
 
             })
     };

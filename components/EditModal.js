@@ -25,12 +25,14 @@ const EditModal = ({ isModalVisible, showModal, contact, confirmUpdating }) => {
             firstname: firstname,
             lastname: lastname,
             company: company,
-            domain: domain,
-            email: email,
-            key: contact.key,
-            status: contact.status,
-            linkedinUrl: linkedinUrl
+            key: contact.key
         };
+        if (email !== ''){
+            updatedContact.email = email;
+            updatedContact.status = "unverified"
+        } 
+        if (domain !== '') updatedContact.domain = domain;
+        if (linkedinUrl !== '') updatedContact.linkedinUrl = linkedinUrl
         confirmUpdating(updatedContact);
         showModal(false)
     }

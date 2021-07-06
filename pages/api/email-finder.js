@@ -11,25 +11,30 @@ const emailFinder = async (req, res) => {
     try {
         const hunterRequest = await request('GET', url);
         const hunterResponse = await JSON.parse(hunterRequest.getBody());
-        let emailStatus;
-        switch (hunterResponse.data.verification.status){
-            case "valid":
-                emailStatus = "valid"
-            break;
-            case "unknown":
-                emailStatus = "unknown"
-            break;
-            case "accept_all":
-                emailStatus = "unverified"
-            break;
-        };
-        let userInfos = {
-            email: hunterResponse.data.email,
-            status: emailStatus,
-            score: hunterResponse.data.score,
-            linkedinUrl: hunterResponse.data.linkedin_url
+
+        if (hunterResponse.data.email) {
+            let emailStatus;
+            switch (hunterResponse.data.verification.status) {
+                case "valid":
+                    emailStatus = "valid"
+                    break;
+                case "unknown":
+                    emailStatus = "unknown"
+                    break;
+                case "accept_all":
+                    emailStatus = "unverified"
+                    break;
+            };
+            let userInfos = {
+                email: hunterResponse.data.email,
+                status: emailStatus,
+                score: hunterResponse.data.score,
+                linkedinUrl: hunterResponse.data.linkedin_url
+            }
+            res.status(200).json({ success: true, userInfos })
+        } else {
+            res.status(200).json({ success: false, error: 'No email found for this contact sorry...' })
         }
-        res.status(200).json({ success: true, userInfos })
     } catch (error) {
         res.status(400).json({ success: false, error })
     }

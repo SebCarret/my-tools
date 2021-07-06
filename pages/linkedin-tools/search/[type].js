@@ -20,7 +20,7 @@ export default function LinkedinSearchProfile() {
 
     useEffect(() => {
         const loadCredits = async () => {
-            let request = await fetch(`/api/credits/linkedin-profile?apiKey=${admin.dropcontactKey}`);
+            let request = await fetch(`/api/credits/enrich-data?apiKey=${admin.dropcontactKey}`);
             let response = await request.json();
             setCreditsLeft(response.credits);
         };
@@ -65,7 +65,7 @@ export default function LinkedinSearchProfile() {
                     <div id={styles.titleContainer}>
                         <h2 id={styles.title}>{title}</h2>
                         <Badge count={creditsLeft}>
-                            <Tooltip title="Credits availables from your Dropcontact account">
+                            <Tooltip title="Dropcontact : credits availables">
                                 <SearchOutlined id={styles.searchPicto} />
                             </Tooltip>
                         </Badge>
