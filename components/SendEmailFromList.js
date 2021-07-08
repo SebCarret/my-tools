@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Select, message, Table, Tag, Button } from 'antd';
-import { LinkedinOutlined, MailOutlined } from '@ant-design/icons';
+import { LinkedinOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import styles from '../styles/email-finder.module.css';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 const { Option } = Select;
 
-export default function sendEmailFromList({email, emailjsId}) {
+export default function sendEmailFromList({ email, emailjsId, templates, adminId }) {
 
     const [loading, setLoading] = useState(false);
     const [columns, setColumns] = useState([]);
@@ -14,8 +15,10 @@ export default function sendEmailFromList({email, emailjsId}) {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [template, setTemplate] = useState('');
+    const [buttonDisabled, setButtonDisabled] = useState(true);
 
     const lists = useSelector(state => state.lists);
+    const router = useRouter();
 
     const handleSelection = async value => {
         setLoading(true);
@@ -87,7 +90,8 @@ export default function sendEmailFromList({email, emailjsId}) {
     };
 
     const chooseTemplate = value => {
-        value === 'first' ? setTemplate('template_tc8hq0b') : setTemplate('template_jvzhQ1xP')
+        setTemplate(value);
+        setButtonDisabled(false)
     };
 
     const sendEmail = async () => {
@@ -112,6 +116,7 @@ export default function sendEmailFromList({email, emailjsId}) {
         };
         setTimeout(() => {
             setIsLoading(false);
+            setButtonDisabled(true);
             message.info('Emails were successfully sent to your contacts !');
         }, timeOut);
     };
@@ -140,18 +145,32 @@ export default function sendEmailFromList({email, emailjsId}) {
                         })
                     }
                 </Select>
-                <Select
-                    defaultValue="Select your template"
-                    disabled={selectedRows.length < 1 ? true : false}
-                    style={{ width: 200, marginRight: 5 }}
-                    onChange={chooseTemplate}
-                >
-                    <Option value="first">First mail</Option>
-                    <Option value="second">Follow up</Option>
-                </Select>
+                {
+                    templates.length === 0
+                        ? <Button
+                            icon={<SettingOutlined />}
+                            style={{ marginRight: 5 }}
+                            onClick={() => router.push(`/account/${adminId}`)}
+                        >
+                            Set templates
+                        </Button>
+                        : <Select
+                            defaultValue="Select your template"
+                            disabled={selectedRows.length < 1 ? true : false}
+                            style={{ width: 200, marginRight: 5 }}
+                            onChange={chooseTemplate}
+                        >
+                            {
+                                templates.map(id => (
+                                    <Option value={id}>{id}</Option>
+                                ))
+                            }
+                        </Select>
+                }
                 <Button
+                    type="primary"
                     icon={<MailOutlined />}
-                    disabled={selectedRows.length < 1 ? true : false}
+                    disabled={buttonDisabled}
                     loading={isLoading}
                     style={antStyles.button}
                     onClick={sendEmail}

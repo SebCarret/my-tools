@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Button, Tag, Table, Select, message } from 'antd';
-import { MailOutlined } from '@ant-design/icons';
+import { MailOutlined, SettingOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/router';
 import styles from '../styles/email-finder.module.css';
 import UploadFile from './UploadFile';
 
 const { CheckableTag } = Tag;
 const { Option } = Select;
 
-export default function sendEmailFromFile({email, emailjsId}) {
+export default function sendEmailFromFile({ email, emailjsId, templates, adminId }) {
 
     const [tempColumns, setTempColumns] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -16,6 +17,9 @@ export default function sendEmailFromFile({email, emailjsId}) {
     const [selectedRows, setSelectedRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [template, setTemplate] = useState('');
+    const [buttonDisabled, setButtonDisabled] = useState(true);
+
+    const router = useRouter();
 
     const handleTempColumns = columns => setTempColumns(columns);
 
@@ -69,7 +73,8 @@ export default function sendEmailFromFile({email, emailjsId}) {
     });
 
     const chooseTemplate = value => {
-        value === 'first' ? setTemplate('template_tc8hq0b') : setTemplate('template_jvzhQ1xP')
+        setTemplate(value);
+        setButtonDisabled(false)
     };
 
     const sendEmail = async () => {
@@ -94,6 +99,7 @@ export default function sendEmailFromFile({email, emailjsId}) {
         };
         setTimeout(() => {
             setIsLoading(false);
+            setButtonDisabled(true);
             message.info('Emails were successfully sent to your contacts !');
         }, timeOut);
     };
@@ -115,19 +121,33 @@ export default function sendEmailFromFile({email, emailjsId}) {
                 columns.length === 0
                     ? null
                     : <div>
-                        <div style={{display: 'flex', marginTop: 20, marginBottom: 20}}>
-                            <Select
-                                defaultValue="Select your template"
-                                disabled={selectedRows.length < 1 ? true : false}
-                                style={{ width: 200, marginRight: 5 }}
-                                onChange={chooseTemplate}
-                            >
-                                <Option value="first">First mail</Option>
-                                <Option value="second">Follow up</Option>
-                            </Select>
+                        <div style={{ display: 'flex', marginTop: 20, marginBottom: 20 }}>
+                            {
+                                templates.length === 0
+                                    ? <Button
+                                        icon={<SettingOutlined />}
+                                        style={{ marginRight: 5 }}
+                                        onClick={() => router.push(`/account/${adminId}`)}
+                                    >
+                                        Set templates
+                                    </Button>
+                                    : <Select
+                                        defaultValue="Select your template"
+                                        disabled={selectedRows.length < 1 ? true : false}
+                                        style={{ width: 200, marginRight: 5 }}
+                                        onChange={chooseTemplate}
+                                    >
+                                        {
+                                            templates.map(id => (
+                                                <Option value={id}>{id}</Option>
+                                            ))
+                                        }
+                                    </Select>
+                            }
                             <Button
+                                type="primary"
                                 icon={<MailOutlined />}
-                                disabled={selectedRows.length < 1 ? true : false}
+                                disabled={buttonDisabled}
                                 loading={isLoading}
                                 onClick={sendEmail}
                             >

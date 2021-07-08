@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Divider, Input, Tooltip, Button, message } from 'antd';
-import { EditOutlined, CheckOutlined, SaveOutlined } from '@ant-design/icons';
+import { EditOutlined, CheckOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import dbConnect from '../../models/dbConnect';
 import adminModel from '../../models/admins';
@@ -23,13 +23,26 @@ export default function Account({ admin }) {
     const [emailjsId, setEmailjsId] = useState(admin.emailjsId ? admin.emailjsId : 'ID not set');
     const [emailjsLocked, setEmailjsLocked] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [templates, setTemplates] = useState(admin.templates ? admin.templates : []);
+    const [idLocked, setIdLocked] = useState([]);
+
+    useEffect(() => {
+        if (admin.templates) {
+            let lockTemplates = [];
+            for (let id of admin.templates) {
+                lockTemplates.push(true)
+            };
+            setIdLocked(lockTemplates)
+        }
+    }, []);
+
 
     const dispatch = useDispatch();
 
     const saveChanges = async () => {
 
         setLoading(true);
-        
+
         let datas = { _id: admin._id };
         if (firstname !== admin.firstname) datas.firstname = firstname;
         if (lastname !== admin.lastname) datas.lastname = lastname;
@@ -38,26 +51,88 @@ export default function Account({ admin }) {
         if (hunterKey !== 'API key not set' || (admin.hunterKey && hunterKey !== admin.hunterKey)) datas.hunterKey = hunterKey;
         if (dropKey !== 'API key not set' || (admin.dropcontactKey && hunterKey !== admin.dropcontactKey)) datas.dropcontactKey = dropKey;
         if (emailjsId !== 'ID not set' || (admin.emailjsId && emailjsId !== admin.emailjsId)) datas.emailjsId = emailjsId;
-
-        if (Object.keys(datas).length === 1){
+        if (Object.keys(datas).length === 1) {
             message.error("Sorry but you didn't change anything...")
         } else {
             let request = await fetch('/api/admin/update', {
                 method: 'PUT',
-                headers: {'Content-Type' : 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datas)
             });
             let response = await request.json();
-            if (response.success){
+            if (response.success) {
                 localStorage.setItem('admin', JSON.stringify(response.admin));
-                dispatch({type: 'update', admin: response.admin});
+                dispatch({ type: 'update', admin: response.admin });
                 message.success(response.message)
             } else {
                 message.error(response.error)
             }
         }
         setLoading(false)
-    }
+    };
+
+    const saveTemplates = async () => {
+
+        setLoading(true);
+
+        let datas = { _id: admin._id };
+        if (templates.length > 0 && !templates.includes('Your template ID')) datas.templates = templates;
+        if (Object.keys(datas).length === 1) {
+            message.error("Sorry but you didn't change anything...")
+        } else {
+            let request = await fetch('/api/admin/set-templates', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datas)
+            });
+            let response = await request.json();
+            if (response.success) {
+                localStorage.setItem('admin', JSON.stringify(response.admin));
+                dispatch({ type: 'update', admin: response.admin });
+                message.success(response.message)
+            } else {
+                message.error(response.error)
+            }
+        }
+        setLoading(false)
+    };
+
+    const handleTemplateLock = index => {
+        let idLockedCopy = [...idLocked];
+        idLockedCopy[index] = !idLockedCopy[index];
+        setIdLocked(idLockedCopy)
+    };
+
+    const handleTemplateId = (value, index) => {
+        let templatesCopy = [...templates];
+        templatesCopy[index] = value;
+        setTemplates(templatesCopy)
+    };
+
+    const templatesList = templates.map((id, i) => {
+        return (
+            <div style={styles.values} key={`template-${i}`}>
+                <p style={styles.labels}>Template {i + 1}</p>
+                <Input
+                    value={id}
+                    bordered={idLocked[i] ? false : true}
+                    disabled={idLocked[i]}
+                    suffix={
+                        <Tooltip title={idLocked[i] ? "Edit ID" : "Valid changes"} placement="right">
+                            {
+                                idLocked[i]
+                                    ? <EditOutlined style={styles.icons} onClick={() => handleTemplateLock(i)} />
+                                    : <CheckOutlined style={styles.icons} onClick={() => handleTemplateLock(i)} />
+                            }
+                        </Tooltip>
+                    }
+                    onChange={e => handleTemplateId(e.target.value, i)}
+                />
+            </div>
+        )
+    });
+
+    // console.log(templates);
 
     return (
         <div style={styles.container}>
@@ -137,6 +212,16 @@ export default function Account({ admin }) {
                         onChange={e => setPassword(e.target.value)}
                     />
                 </div>
+                <Button
+                    style={styles.button}
+                    size="large"
+                    type="primary"
+                    loading={loading}
+                    icon={< SaveOutlined />}
+                    onClick={saveChanges}
+                >
+                    Save infos
+                </Button>
                 <Divider orientation="left" style={styles.divider}>API keys</Divider>
                 <div style={styles.values}>
                     <p style={styles.labels}>Hunter</p>
@@ -200,7 +285,27 @@ export default function Account({ admin }) {
                     icon={< SaveOutlined />}
                     onClick={saveChanges}
                 >
-                    Save changes
+                    Save API keys
+                </Button>
+                <Divider orientation="left" style={styles.divider}>EmailJS templates</Divider>
+                {templatesList}
+                <Button
+                    type="dashed"
+                    style={{ width: '100%' }}
+                    icon={<PlusOutlined />}
+                    onClick={() => { setTemplates([...templates, 'Your template ID']), setIdLocked([...idLocked, true]) }}
+                >
+                    Add template ID
+                </Button>
+                <Button
+                    style={styles.button}
+                    size="large"
+                    type="primary"
+                    loading={loading}
+                    icon={< SaveOutlined />}
+                    onClick={saveTemplates}
+                >
+                    Save templates
                 </Button>
             </div>
         </div>
@@ -209,13 +314,13 @@ export default function Account({ admin }) {
 
 const styles = {
     container: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
-    settings: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '50%' },
+    settings: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '50%', marginBottom: 25 },
     divider: { borderColor: "#23B5D3", color: "#23B5D3" },
     values: { display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', margin: 5 },
     labels: { fontWeight: 'bold', marginBottom: 0, width: '25%' },
     inputs: { width: '75%' },
     icons: { cursor: 'pointer' },
-    button: { marginTop: 25 }
+    button: { marginTop: 25, width: 200 }
 };
 
 export async function getServerSideProps({ params }) {

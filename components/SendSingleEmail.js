@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { Form, Button, Input, message, Select } from "antd";
-import { MailOutlined } from '@ant-design/icons';
+import { MailOutlined, SettingOutlined } from '@ant-design/icons';
+import { useRouter } from "next/router";
 
 const { Option } = Select;
 
-export default function sendSingleEmail({email, emailjsId}) {
+export default function sendSingleEmail({ email, emailjsId, templates, adminId }) {
 
     const [loading, setLoading] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(true);
 
     const [form] = Form.useForm();
+    const router = useRouter();
 
-    const chooseTemplate = value => form.setFieldsValue({template: value});
+    const chooseTemplate = value => {
+        form.setFieldsValue({ template: value });
+        setButtonDisabled(false)
+    }; 
 
     const sendEmail = async values => {
         setLoading(true);
@@ -29,7 +35,8 @@ export default function sendSingleEmail({email, emailjsId}) {
                     message.error('Email unsuccessfully sent... Please try again')
                 };
                 setLoading(false);
-                form.resetFields()
+                form.resetFields();
+                setButtonDisabled(true)
             }, function (error) {
                 console.log('FAILED...', error);
             });
@@ -76,7 +83,7 @@ export default function sendSingleEmail({email, emailjsId}) {
                     placeholder="john@facebook.com"
                 />
             </Form.Item>
-            <Form.Item 
+            <Form.Item
                 name="template"
                 rules={[
                     {
@@ -85,14 +92,22 @@ export default function sendSingleEmail({email, emailjsId}) {
                     }
                 ]}
             >
-                <Select
-                    defaultValue="Select your template"
-                    style={{ width: 200 }}
-                    onChange={chooseTemplate}
-                >
-                    <Option value="template_tc8hq0b">First mail</Option>
-                    <Option value="template_jvzhQ1xP">Follow up</Option>
-                </Select>
+                {
+                    templates.length === 0
+                        ? <Button icon={<SettingOutlined />} onClick={() => router.push(`/account/${adminId}`)}>Set templates</Button>
+                        : <Select
+                                defaultValue="Select your template"
+                                style={{ width: 200 }}
+                                onChange={chooseTemplate}
+                            >
+                                {
+                                    templates.map(id => (
+                                        <Option value={id}>{id}</Option>
+                                    ))
+                                }
+                            </Select>
+                }
+
             </Form.Item>
             <Form.Item>
                 <Button
@@ -100,7 +115,7 @@ export default function sendSingleEmail({email, emailjsId}) {
                     htmlType="submit"
                     icon={<MailOutlined />}
                     loading={loading}
-                // disabled={credits === 0 ? true : false}
+                    disabled={buttonDisabled}
                 >
                     Send email
                 </Button>

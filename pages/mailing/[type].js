@@ -21,17 +21,17 @@ export default function mailingContainer() {
         case 'single':
             title = 'Send single email';
             description = 'Please fill in all fields below to respect dynamic variables set in your EmailJS template.';
-            contentToDisplay = <SendSingleEmail emailjsId={admin.emailjsId} email={admin.email} />
+            contentToDisplay = <SendSingleEmail emailjsId={admin.emailjsId} email={admin.email} templates={admin.templates} adminId={admin._id} />
             break;
         case 'upload':
             title = 'Send emails from a CSV file';
             description = 'Select contacts from an uploaded list to send them emails based on your EmailJS templates.';
-            contentToDisplay = <SendEmailFromFile emailjsId={admin.emailjsId} email={admin.email} />
+            contentToDisplay = <SendEmailFromFile emailjsId={admin.emailjsId} email={admin.email} templates={admin.templates} adminId={admin._id} />
             break;
         case 'list':
             title = 'Send emails from your lists';
             description = 'Select contacts from one of your list to send them emails based on your EmailJS templates.';
-            contentToDisplay = <SendEmailFromList emailjsId={admin.emailjsId} email={admin.email} />
+            contentToDisplay = <SendEmailFromList emailjsId={admin.emailjsId} email={admin.email} templates={admin.templates} adminId={admin._id} />
             break;
     };
 

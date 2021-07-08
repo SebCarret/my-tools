@@ -1,5 +1,8 @@
-import Password from 'antd/lib/input/Password';
 import mongoose from 'mongoose';
+
+const templateSchema = new mongoose.Schema({
+    template: String
+})
 
 const adminSchema = new mongoose.Schema({
     firstname: String,
@@ -8,7 +11,8 @@ const adminSchema = new mongoose.Schema({
     password: String,
     hunterKey: String,
     dropcontactKey: String,
-    emailjsId: String
+    emailjsId: String,
+    templates: Array
 });
 
 export default mongoose.models.Admins || mongoose.model('Admins', adminSchema);
